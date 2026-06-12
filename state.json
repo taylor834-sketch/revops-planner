@@ -1,0 +1,1086 @@
+{
+  "items": [
+    {
+      "id": 14,
+      "bucket": "MonetizeNow Implementation",
+      "name": "AdobeSign <> MN integration",
+      "size": "S",
+      "status": "Not Started",
+      "L": 4,
+      "T": 0,
+      "agent": false,
+      "due": "2026-06-10"
+    },
+    {
+      "id": 15,
+      "bucket": "MonetizeNow Implementation",
+      "name": "Salesforce <> MN integration",
+      "size": "XL",
+      "status": "Not Started",
+      "L": 10,
+      "T": 40,
+      "agent": false,
+      "due": "2026-06-12"
+    },
+    {
+      "id": 22,
+      "bucket": "MonetizeNow Implementation",
+      "name": "Conditional Terms build (New/Renewal/Upsell)",
+      "size": "M",
+      "status": "Working",
+      "L": 9,
+      "T": 0,
+      "agent": false,
+      "due": "2026-06-12"
+    },
+    {
+      "id": 23,
+      "bucket": "MonetizeNow Implementation",
+      "name": "New Logo: Approval Rules",
+      "size": "S",
+      "status": "Working",
+      "L": 4.5,
+      "T": 0,
+      "agent": false,
+      "due": "2026-06-19"
+    },
+    {
+      "id": 24,
+      "bucket": "MonetizeNow Implementation",
+      "name": "Renewal: Approval Rules",
+      "size": "S",
+      "status": "Working",
+      "L": 4.5,
+      "T": 0,
+      "agent": false,
+      "due": "2026-06-19"
+    },
+    {
+      "id": 25,
+      "bucket": "MonetizeNow Implementation",
+      "name": "Upsell: Approval Rules",
+      "size": "S",
+      "status": "Working",
+      "L": 4.5,
+      "T": 0,
+      "agent": false,
+      "due": "2026-06-19"
+    },
+    {
+      "id": 16,
+      "bucket": "MonetizeNow Implementation",
+      "name": "New Logo: Quote Creation",
+      "size": "S",
+      "status": "Not Started",
+      "L": 5,
+      "T": 0,
+      "agent": false,
+      "due": "2026-06-26"
+    },
+    {
+      "id": 17,
+      "bucket": "MonetizeNow Implementation",
+      "name": "Renewal: Quote Creation",
+      "size": "S",
+      "status": "Not Started",
+      "L": 5,
+      "T": 0,
+      "agent": false,
+      "due": "2026-06-26"
+    },
+    {
+      "id": 18,
+      "bucket": "MonetizeNow Implementation",
+      "name": "Upsell: Quote Creation",
+      "size": "S",
+      "status": "Not Started",
+      "L": 5,
+      "T": 0,
+      "agent": false,
+      "due": "2026-06-26"
+    },
+    {
+      "id": 19,
+      "bucket": "MonetizeNow Implementation",
+      "name": "Historical data imported into MN",
+      "size": "M",
+      "status": "Not Started",
+      "L": 15,
+      "T": 0,
+      "agent": false,
+      "due": "2026-06-30"
+    },
+    {
+      "id": 20,
+      "bucket": "MonetizeNow Implementation",
+      "name": "New Logo: Enablement Documentation",
+      "size": "S",
+      "status": "Not Started",
+      "L": 4,
+      "T": 0,
+      "agent": false,
+      "due": "2026-07-01"
+    },
+    {
+      "id": 21,
+      "bucket": "MonetizeNow Implementation",
+      "name": "Renewal & Upsell: Enablement Documentation",
+      "size": "S",
+      "status": "Not Started",
+      "L": 4,
+      "T": 0,
+      "agent": false,
+      "due": "2026-07-01"
+    },
+    {
+      "id": 13,
+      "bucket": "GTM Reporting",
+      "name": "Move dashboard to be hosted in SF (live data)",
+      "size": "L",
+      "status": "Working",
+      "L": 0.25,
+      "T": 2.25,
+      "agent": false,
+      "due": "2026-06-04"
+    },
+    {
+      "id": 9,
+      "bucket": "GTM Reporting",
+      "name": "Rep level module",
+      "size": "M",
+      "status": "Not Started",
+      "L": 14.25,
+      "T": 0.75,
+      "agent": false,
+      "due": null
+    },
+    {
+      "id": 10,
+      "bucket": "GTM Reporting",
+      "name": "Historical Trending module (NMP, Win Rate, ASP…)",
+      "size": "M",
+      "status": "Not Started",
+      "L": 14.25,
+      "T": 0.75,
+      "agent": false,
+      "due": null
+    },
+    {
+      "id": 11,
+      "bucket": "GTM Reporting",
+      "name": "Build out forecasting module",
+      "size": "S",
+      "status": "Not Started",
+      "L": 9.5,
+      "T": 0.5,
+      "agent": false,
+      "due": null
+    },
+    {
+      "id": 12,
+      "bucket": "GTM Reporting",
+      "name": "Adding GRR and NRR module",
+      "size": "L",
+      "status": "Not Started",
+      "L": 19,
+      "T": 2,
+      "agent": false,
+      "due": null
+    },
+    {
+      "id": 40,
+      "bucket": "Inbound Automation",
+      "name": "Document & design inbound routing process",
+      "size": "L",
+      "status": "Not Started",
+      "L": 8,
+      "T": 12,
+      "agent": false,
+      "due": null
+    },
+    {
+      "id": 41,
+      "bucket": "Inbound Automation",
+      "name": "Build & implement inbound routing process",
+      "size": "L",
+      "status": "Not Started",
+      "L": 2,
+      "T": 18,
+      "agent": false,
+      "due": null
+    },
+    {
+      "id": 5,
+      "bucket": "Salesforce <> Claude Integration",
+      "name": "Create MCP enablement documentation",
+      "size": "S",
+      "status": "Not Started",
+      "L": 0.9,
+      "T": 2.1,
+      "agent": true,
+      "due": "2026-06-01"
+    },
+    {
+      "id": 6,
+      "bucket": "Salesforce <> Claude Integration",
+      "name": "Rollout Production MCP",
+      "size": "S",
+      "status": "Not Started",
+      "L": 0.2,
+      "T": 1.8,
+      "agent": true,
+      "due": "2026-06-02"
+    },
+    {
+      "id": 27,
+      "bucket": "Pipeline Agent",
+      "name": "Next Step Scoring Agent: Build & deploy (pull, score, push to SF)",
+      "size": "M",
+      "status": "Not Started",
+      "L": 3,
+      "T": 12,
+      "agent": true,
+      "due": null
+    },
+    {
+      "id": 28,
+      "bucket": "Pipeline Agent",
+      "name": "Next Step Scoring Agent: Rep-facing enablement materials",
+      "size": "S",
+      "status": "Not Started",
+      "L": 0.4,
+      "T": 1.6,
+      "agent": true,
+      "due": null
+    },
+    {
+      "id": 29,
+      "bucket": "Pipeline Agent",
+      "name": "MEDDPICC Agent: Build out call assessment",
+      "size": "S",
+      "status": "Not Started",
+      "L": 6,
+      "T": 4,
+      "agent": true,
+      "due": null
+    },
+    {
+      "id": 30,
+      "bucket": "Pipeline Agent",
+      "name": "MEDDPICC Agent: Push assessment to SF 'AI MEDDPICC' fields",
+      "size": "S",
+      "status": "Not Started",
+      "L": 0.4,
+      "T": 3.6,
+      "agent": true,
+      "due": null
+    },
+    {
+      "id": 31,
+      "bucket": "Pipeline Agent",
+      "name": "Risk Scoring Agent: Build, iterate & finalize rubric",
+      "size": "S",
+      "status": "Not Started",
+      "L": 0,
+      "T": 5,
+      "agent": true,
+      "due": null
+    },
+    {
+      "id": 32,
+      "bucket": "Pipeline Agent",
+      "name": "Risk Scoring Agent: Build & deploy (pull, score, push to SF)",
+      "size": "M",
+      "status": "Not Started",
+      "L": 3,
+      "T": 12,
+      "agent": true,
+      "due": null
+    },
+    {
+      "id": 33,
+      "bucket": "Pipeline Agent",
+      "name": "Risk Scoring Agent: Rep-facing enablement materials",
+      "size": "S",
+      "status": "Not Started",
+      "L": 0.4,
+      "T": 1.6,
+      "agent": true,
+      "due": null
+    },
+    {
+      "id": 34,
+      "bucket": "Pipeline Agent",
+      "name": "Qualification of Pain Agent: Build, iterate & finalize rubric",
+      "size": "S",
+      "status": "Not Started",
+      "L": 0,
+      "T": 5,
+      "agent": true,
+      "due": null
+    },
+    {
+      "id": 35,
+      "bucket": "Pipeline Agent",
+      "name": "Qualification of Pain Agent: Build & deploy (pull, score, push to SF)",
+      "size": "M",
+      "status": "Not Started",
+      "L": 3,
+      "T": 12,
+      "agent": true,
+      "due": null
+    },
+    {
+      "id": 36,
+      "bucket": "Pipeline Agent",
+      "name": "Qualification of Pain Agent: Rep-facing enablement materials",
+      "size": "S",
+      "status": "Not Started",
+      "L": 0.4,
+      "T": 1.6,
+      "agent": true,
+      "due": null
+    },
+    {
+      "id": 37,
+      "bucket": "Pipeline Agent",
+      "name": "Pipeline Health Agent: Build, iterate & finalize rubric",
+      "size": "S",
+      "status": "Not Started",
+      "L": 0,
+      "T": 5,
+      "agent": true,
+      "due": null
+    },
+    {
+      "id": 38,
+      "bucket": "Pipeline Agent",
+      "name": "Pipeline Health Agent: Build & deploy (pull, score, push to SF)",
+      "size": "M",
+      "status": "Not Started",
+      "L": 3,
+      "T": 12,
+      "agent": true,
+      "due": null
+    },
+    {
+      "id": 39,
+      "bucket": "Pipeline Agent",
+      "name": "Pipeline Health Agent: Rep-facing enablement materials",
+      "size": "S",
+      "status": "Not Started",
+      "L": 0.4,
+      "T": 1.6,
+      "agent": true,
+      "due": null
+    },
+    {
+      "id": 42,
+      "bucket": "ABM Engine Agent",
+      "name": "Scoping",
+      "size": "M",
+      "status": "Not Started",
+      "L": 3,
+      "T": 12,
+      "agent": true,
+      "due": null
+    },
+    {
+      "id": 43,
+      "bucket": "ABM Engine Agent",
+      "name": "Build (placeholder until scoped)",
+      "size": "XL",
+      "status": "Not Started",
+      "L": 12,
+      "T": 48,
+      "agent": true,
+      "due": null
+    },
+    {
+      "id": 44,
+      "bucket": "Salesforce General",
+      "name": "Opp Mgmt: Dollar General <> Service Provider accts",
+      "size": "M",
+      "status": "Not Started",
+      "L": 8,
+      "T": 12,
+      "agent": false,
+      "due": null
+    },
+    {
+      "id": 45,
+      "bucket": "Salesforce General",
+      "name": "Opp Mgmt: CW affiliate opps in SF",
+      "size": "M",
+      "status": "Not Started",
+      "L": 8,
+      "T": 12,
+      "agent": false,
+      "due": null
+    },
+    {
+      "id": 50,
+      "bucket": "Salesforce General",
+      "name": "Page layout audit on all objects",
+      "size": "S",
+      "status": "Not Started",
+      "L": 4,
+      "T": 1,
+      "agent": false,
+      "due": null
+    },
+    {
+      "id": 51,
+      "bucket": "Salesforce General",
+      "name": "Field audit across all objects",
+      "size": "L",
+      "status": "Working",
+      "L": 4.8,
+      "T": 19.2,
+      "agent": false,
+      "due": null
+    },
+    {
+      "id": 54,
+      "bucket": "Salesforce General",
+      "name": "Review Veltig FT/LT campaign work",
+      "size": "S",
+      "status": "Backlog",
+      "L": 0,
+      "T": 10,
+      "agent": false,
+      "due": null
+    },
+    {
+      "id": 55,
+      "bucket": "Salesforce General",
+      "name": "Evaluate Einstein activity capture",
+      "size": "S",
+      "status": "Backlog",
+      "L": 1.5,
+      "T": 3.5,
+      "agent": false,
+      "due": null
+    },
+    {
+      "id": 56,
+      "bucket": "Salesforce General",
+      "name": "Flow / automation audit",
+      "size": "L",
+      "status": "Backlog",
+      "L": 0,
+      "T": 40,
+      "agent": false,
+      "due": null
+    },
+    {
+      "id": 46,
+      "bucket": "Data Clean Up & Enrichment",
+      "name": "Review contacts to identify for archive",
+      "size": "S",
+      "status": "Not Started",
+      "L": 2.4,
+      "T": 1.6,
+      "agent": false,
+      "due": null
+    },
+    {
+      "id": 47,
+      "bucket": "Data Clean Up & Enrichment",
+      "name": "Archive identified junk contacts",
+      "size": "S",
+      "status": "Not Started",
+      "L": 0,
+      "T": 1,
+      "agent": false,
+      "due": null
+    },
+    {
+      "id": 48,
+      "bucket": "Data Clean Up & Enrichment",
+      "name": "De-dup Accounts",
+      "size": "S",
+      "status": "Not Started",
+      "L": 1.6,
+      "T": 6.4,
+      "agent": false,
+      "due": null
+    },
+    {
+      "id": 49,
+      "bucket": "Data Clean Up & Enrichment",
+      "name": "Update De-dupe Process",
+      "size": "S",
+      "status": "Not Started",
+      "L": 0.2,
+      "T": 1.8,
+      "agent": false,
+      "due": null
+    },
+    {
+      "id": 52,
+      "bucket": "Contact Stage Review",
+      "name": "Documenting Contact Stages",
+      "size": "S",
+      "status": "Not Started",
+      "L": 2.4,
+      "T": 9.6,
+      "agent": false,
+      "due": null
+    },
+    {
+      "id": 53,
+      "bucket": "Contact Stage Review",
+      "name": "Review contact stage process & implement changes",
+      "size": "S",
+      "status": "Not Started",
+      "L": 3,
+      "T": 3,
+      "agent": false,
+      "due": null
+    }
+  ],
+  "buckets": [
+    {
+      "name": "MonetizeNow Implementation",
+      "color": "#C8881C"
+    },
+    {
+      "name": "GTM Reporting",
+      "color": "#0E7C7B"
+    },
+    {
+      "name": "Inbound Automation",
+      "color": "#C0623A"
+    },
+    {
+      "name": "Salesforce <> Claude Integration",
+      "color": "#7A6B4A"
+    },
+    {
+      "name": "Pipeline Agent",
+      "color": "#5B4B8A"
+    },
+    {
+      "name": "ABM Engine Agent",
+      "color": "#4A6B7A"
+    },
+    {
+      "name": "Salesforce General",
+      "color": "#3D5A80"
+    },
+    {
+      "name": "Data Clean Up & Enrichment",
+      "color": "#6B8E5A"
+    },
+    {
+      "name": "Contact Stage Review",
+      "color": "#A4596B"
+    }
+  ],
+  "placements": {
+    "5": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 1
+      }
+    },
+    "6": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 1
+      }
+    },
+    "9": {
+      "L": {
+        "start": 1,
+        "length": 4
+      },
+      "T": {
+        "start": 1,
+        "length": 1
+      }
+    },
+    "10": {
+      "L": {
+        "start": 1,
+        "length": 4
+      },
+      "T": {
+        "start": 1,
+        "length": 1
+      }
+    },
+    "11": {
+      "L": {
+        "start": 1,
+        "length": 3
+      },
+      "T": {
+        "start": 1,
+        "length": 1
+      }
+    },
+    "12": {
+      "L": {
+        "start": 1,
+        "length": 5
+      },
+      "T": {
+        "start": 1,
+        "length": 1
+      }
+    },
+    "13": {
+      "L": {
+        "start": 0,
+        "length": 1
+      },
+      "T": {
+        "start": 0,
+        "length": 1
+      }
+    },
+    "14": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 1
+      }
+    },
+    "15": {
+      "L": {
+        "start": 1,
+        "length": 3
+      },
+      "T": {
+        "start": 1,
+        "length": 10
+      }
+    },
+    "16": {
+      "L": {
+        "start": 1,
+        "length": 2
+      },
+      "T": {
+        "start": 1,
+        "length": 1
+      }
+    },
+    "17": {
+      "L": {
+        "start": 1,
+        "length": 2
+      },
+      "T": {
+        "start": 1,
+        "length": 1
+      }
+    },
+    "18": {
+      "L": {
+        "start": 1,
+        "length": 2
+      },
+      "T": {
+        "start": 1,
+        "length": 1
+      }
+    },
+    "19": {
+      "L": {
+        "start": 1,
+        "length": 4
+      },
+      "T": {
+        "start": 1,
+        "length": 1
+      }
+    },
+    "20": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 1
+      }
+    },
+    "21": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 1
+      }
+    },
+    "22": {
+      "L": {
+        "start": 0,
+        "length": 3
+      },
+      "T": {
+        "start": 0,
+        "length": 1
+      }
+    },
+    "23": {
+      "L": {
+        "start": 0,
+        "length": 2
+      },
+      "T": {
+        "start": 0,
+        "length": 1
+      }
+    },
+    "24": {
+      "L": {
+        "start": 0,
+        "length": 2
+      },
+      "T": {
+        "start": 0,
+        "length": 1
+      }
+    },
+    "25": {
+      "L": {
+        "start": 0,
+        "length": 2
+      },
+      "T": {
+        "start": 0,
+        "length": 1
+      }
+    },
+    "27": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 3
+      }
+    },
+    "28": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 1
+      }
+    },
+    "29": {
+      "L": {
+        "start": 1,
+        "length": 2
+      },
+      "T": {
+        "start": 1,
+        "length": 1
+      }
+    },
+    "30": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 1
+      }
+    },
+    "31": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 2
+      }
+    },
+    "32": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 3
+      }
+    },
+    "33": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 1
+      }
+    },
+    "34": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 2
+      }
+    },
+    "35": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 3
+      }
+    },
+    "36": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 1
+      }
+    },
+    "37": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 2
+      }
+    },
+    "38": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 3
+      }
+    },
+    "39": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 1
+      }
+    },
+    "40": {
+      "L": {
+        "start": 1,
+        "length": 2
+      },
+      "T": {
+        "start": 1,
+        "length": 3
+      }
+    },
+    "41": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 5
+      }
+    },
+    "42": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 3
+      }
+    },
+    "43": {
+      "L": {
+        "start": 1,
+        "length": 3
+      },
+      "T": {
+        "start": 1,
+        "length": 12
+      }
+    },
+    "44": {
+      "L": {
+        "start": 1,
+        "length": 2
+      },
+      "T": {
+        "start": 1,
+        "length": 3
+      }
+    },
+    "45": {
+      "L": {
+        "start": 1,
+        "length": 2
+      },
+      "T": {
+        "start": 1,
+        "length": 3
+      }
+    },
+    "46": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 1
+      }
+    },
+    "47": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 1
+      }
+    },
+    "48": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 2
+      }
+    },
+    "49": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 1
+      }
+    },
+    "50": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 1
+      }
+    },
+    "51": {
+      "L": {
+        "start": 0,
+        "length": 2
+      },
+      "T": {
+        "start": 0,
+        "length": 5
+      }
+    },
+    "52": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 3
+      }
+    },
+    "53": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 1
+      }
+    },
+    "54": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 3
+      }
+    },
+    "55": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 1
+      }
+    },
+    "56": {
+      "L": {
+        "start": 1,
+        "length": 1
+      },
+      "T": {
+        "start": 1,
+        "length": 10
+      }
+    }
+  },
+  "budgets": {
+    "lydiaWeekly": 30,
+    "taylorAgentMonthly": "",
+    "taylorNonAgentMonthly": 60,
+    "taylorWeeklyCeiling": 35,
+    "bufferHrs": 4
+  },
+  "hidden": [],
+  "includeBacklog": false,
+  "visibleWeekdays": 88,
+  "savedAt": "2026-06-12T22:33:40.676Z",
+  "scenarios": {},
+  "activeName": null
+}
