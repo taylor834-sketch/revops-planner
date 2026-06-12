@@ -496,15 +496,6 @@ input[type=number]:focus, input[type=text]:focus, input[type=date]:focus { borde
 .gh-status { font-size: 11px; color: var(--ink-3); }
 .gh-status.success { color: var(--green-fg); }
 .gh-status.error { color: var(--red-fg); }
-.gh-settings-modal { max-width: 500px; }
-.gh-settings-modal label { display: block; margin-bottom: 12px; font-size: 13px; color: var(--ink-2); }
-.gh-settings-modal input[type=text],
-.gh-settings-modal input[type=password] {
-  display: block; width: 100%; margin-top: 4px; padding: 6px 8px;
-  background: var(--paper-tint); border: 1px solid var(--line); border-radius: 4px;
-  font-family: 'JetBrains Mono', monospace; font-size: 12px;
-}
-.gh-settings-modal .help-text { font-size: 11px; color: var(--ink-3); margin-top: 4px; line-height: 1.4; }
 .btn.gh { background: #24292e; color: white; border-color: #24292e; }
 .btn.gh:hover { background: #444d56; }
 .btn.gh:disabled { background: #6a737d; border-color: #6a737d; }
@@ -682,41 +673,21 @@ function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val));
 function lsDel(key)      { try { localStorage.removeItem(key); } catch (_) {} }
 const RESTORED = lsGet(WORKING_KEY) || {};
 
-/* ── GitHub sync ── */
-const GH_PAT_KEY  = 'revops_planner_gh_pat';
-const GH_REPO_KEY = 'revops_planner_gh_repo';
-const GH_FILE     = 'state.json';
-
-async function ghApiGet(repo, pat, path) {
-  const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
-    headers: { 'Authorization': `token ${pat}`, 'Accept': 'application/vnd.github.v3+json' },
-  });
+/* ── GitHub sync (via serverless API proxy) ── */
+async function ghLoadState() {
+  const res = await fetch('/api/state');
   if (res.status === 404) return null;
-  if (!res.ok) throw new Error(`GitHub API ${res.status}: ${await res.text()}`);
+  if (!res.ok) { const t = await res.json().catch(() => ({})); throw new Error(t.error || `API ${res.status}`); }
   return res.json();
 }
 
-async function ghLoadState(repo, pat) {
-  const file = await ghApiGet(repo, pat, GH_FILE);
-  if (!file) return null;
-  const json = atob(file.content.replace(/\n/g, ''));
-  return { data: JSON.parse(json), sha: file.sha };
-}
-
-async function ghSaveState(repo, pat, snapshot) {
-  const existing = await ghApiGet(repo, pat, GH_FILE);
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(snapshot, null, 2))));
-  const body = {
-    message: 'Update planner state — ' + new Date().toLocaleString(),
-    content,
-  };
-  if (existing) body.sha = existing.sha;
-  const res = await fetch(`https://api.github.com/repos/${repo}/contents/${GH_FILE}`, {
+async function ghSaveState(snapshot) {
+  const res = await fetch('/api/state', {
     method: 'PUT',
-    headers: { 'Authorization': `token ${pat}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(snapshot),
   });
-  if (!res.ok) throw new Error(`GitHub API ${res.status}: ${await res.text()}`);
+  if (!res.ok) { const t = await res.json().catch(() => ({})); throw new Error(t.error || `API ${res.status}`); }
   return res.json();
 }
 
@@ -837,43 +808,35 @@ function App() {
   const [rollupCollapsed, setRollupCollapsed] = useState(false);
 
   // ── GitHub sync state ──
-  const [ghPat, setGhPat] = useState(() => lsGet(GH_PAT_KEY) || '');
-  const [ghRepo, setGhRepo] = useState(() => lsGet(GH_REPO_KEY) || 'taylor834-sketch/revops-planner');
-  const [ghStatus, setGhStatus] = useState(null); // { type: 'success'|'error'|'loading', msg }
-  const [ghSettingsOpen, setGhSettingsOpen] = useState(false);
-
-  useEffect(() => { lsSet(GH_PAT_KEY, ghPat); }, [ghPat]);
-  useEffect(() => { lsSet(GH_REPO_KEY, ghRepo); }, [ghRepo]);
+  const [ghStatus, setGhStatus] = useState(null);
 
   const ghSave = useCallback(async () => {
-    if (!ghPat || !ghRepo) { setGhSettingsOpen(true); return; }
-    setGhStatus({ type: 'loading', msg: 'Saving to GitHub…' });
+    setGhStatus({ type: 'loading', msg: 'Saving…' });
     try {
       const snap = currentSnapshot();
       snap.scenarios = scenarios;
       snap.activeName = activeName;
-      await ghSaveState(ghRepo, ghPat, snap);
-      setGhStatus({ type: 'success', msg: 'Saved to GitHub ✓' });
+      await ghSaveState(snap);
+      setGhStatus({ type: 'success', msg: 'Saved ✓' });
     } catch (err) {
       setGhStatus({ type: 'error', msg: 'Save failed: ' + err.message });
     }
-  }, [ghPat, ghRepo, items, buckets, placements, budgets, hidden, includeBacklog, visibleWeekdays, scenarios, activeName]);
+  }, [items, buckets, placements, budgets, hidden, includeBacklog, visibleWeekdays, scenarios, activeName]);
 
   const ghLoad = useCallback(async () => {
-    if (!ghPat || !ghRepo) { setGhSettingsOpen(true); return; }
-    setGhStatus({ type: 'loading', msg: 'Loading from GitHub…' });
+    setGhStatus({ type: 'loading', msg: 'Loading…' });
     try {
-      const result = await ghLoadState(ghRepo, ghPat);
-      if (!result) { setGhStatus({ type: 'error', msg: 'No state.json found in repo' }); return; }
+      const result = await ghLoadState();
+      if (!result) { setGhStatus({ type: 'error', msg: 'No saved state found' }); return; }
       const data = result.data;
       applySnapshot(data);
       if (data.scenarios) setScenarios(data.scenarios);
       if (data.activeName) setActiveName(data.activeName);
-      setGhStatus({ type: 'success', msg: 'Loaded from GitHub ✓' });
+      setGhStatus({ type: 'success', msg: 'Loaded ✓' });
     } catch (err) {
       setGhStatus({ type: 'error', msg: 'Load failed: ' + err.message });
     }
-  }, [ghPat, ghRepo]);
+  }, []);
 
   // Reactive time grid
   const DAYS = useMemo(() => computeDays(visibleWeekdays), [visibleWeekdays]);
@@ -1310,31 +1273,7 @@ function App() {
         {ghStatus && (
           <span className={"gh-status " + ghStatus.type}>{ghStatus.msg}</span>
         )}
-        <span style={{flex:1}} />
-        <button className="btn" onClick={() => setGhSettingsOpen(true)} title="Configure GitHub token and repo">⚙ Settings</button>
       </div>
-
-      {ghSettingsOpen && (
-        <div className="modal-overlay" onClick={() => setGhSettingsOpen(false)}>
-          <div className="modal gh-settings-modal" onClick={e => e.stopPropagation()}>
-            <h3 style={{margin: '0 0 12px', fontFamily: 'Fraunces, serif'}}>GitHub Sync Settings</h3>
-            <label>
-              Repository (owner/repo)
-              <input type="text" value={ghRepo} onChange={e => setGhRepo(e.target.value)} placeholder="owner/repo-name" />
-            </label>
-            <label>
-              Personal Access Token
-              <input type="password" value={ghPat} onChange={e => setGhPat(e.target.value)} placeholder="ghp_xxxxxxxxxxxx" />
-              <div className="help-text">
-                Create a fine-grained PAT at GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens. Grant "Contents" read/write access to your repo only. The token is stored in your browser's localStorage — never committed to the repo.
-              </div>
-            </label>
-            <div className="modal-actions">
-              <button className="btn" onClick={() => setGhSettingsOpen(false)}>Close</button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Plan summary */}
       <div className="bar">
