@@ -1,0 +1,1814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RevOps Planner v2 — Step 1 Stub</title>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #EBEFF2;
+  --paper: #FFFFFF;
+  --paper-tint: #F2FAFB;
+  --ink: #0F2A2E;
+  --ink-2: #3F5B61;
+  --ink-3: #6B7280;
+  --line: #D5E0E3;
+  --line-strong: #B7C7CB;
+  --today: #C13D2F;
+  --L-bar: #00909E;
+  --T-bar: #E08A3C;
+  --green-bg: #DDEBE2;  --green-fg: #2F6B4A;
+  --amber-bg: #FBF0D6;  --amber-fg: #8A6E20;
+  --red-bg:   #F4D7D0;  --red-fg:   #A8442F;
+  --neutral-bg: #E7ECEE; --neutral-fg: #6B7280;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: 'Hanken Grotesk', system-ui, sans-serif; font-size: 14px; }
+body { padding: 24px; }
+.mono { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
+h1, h2, h3 { font-family: 'Fraunces', serif; font-weight: 500; margin: 0; }
+button, input, select { font-family: inherit; font-size: inherit; color: inherit; }
+input[type=number], input[type=text], input[type=date] {
+  background: var(--paper-tint); border: 1px solid var(--line); border-radius: 4px;
+  padding: 4px 6px; outline: none;
+}
+input[type=number]:focus, input[type=text]:focus, input[type=date]:focus { border-color: var(--ink-2); }
+
+/* page chrome */
+.app { max-width: 100%; margin: 0 auto; }
+.title-bar { display: flex; align-items: baseline; gap: 16px; margin-bottom: 12px; }
+.title-bar h1 { font-size: 28px; letter-spacing: -0.01em; }
+.title-bar .scenario-name { color: var(--ink-2); font-style: italic; font-family: 'Fraunces', serif; font-size: 16px; display: inline-flex; align-items: baseline; gap: 8px; }
+.title-bar .scenario-name.unnamed { color: var(--ink-3); }
+.title-bar .auto-saved-tag {
+  font-family: 'Hanken Grotesk', sans-serif; font-style: normal; font-size: 10px;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--green-fg);
+  background: var(--green-bg); padding: 2px 6px; border-radius: 3px;
+}
+.scenario-bar { border: 2px solid var(--ink-2); background: var(--paper-tint); }
+.btn.primary { background: var(--green-bg); color: var(--green-fg); border-color: var(--green-fg); font-weight: 600; }
+.btn.primary:hover { background: var(--green-fg); color: white; }
+.draft-tag { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-3); border: 1px solid var(--line); padding: 2px 6px; border-radius: 3px; margin-left: auto; }
+
+/* control bars */
+.bar { background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 10px 14px; margin-bottom: 8px; }
+.row-flex { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.bar-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-3); margin-right: 8px; }
+
+.btn { background: var(--paper-tint); border: 1px solid var(--line); border-radius: 4px; padding: 5px 10px; cursor: pointer; transition: background 0.1s; }
+.btn:hover { background: var(--paper); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 14px; border: 1px solid var(--line-strong); background: var(--paper-tint); cursor: pointer; font-size: 12px; }
+.chip[data-active="false"] { opacity: 0.4; background: transparent; }
+.chip .dot { width: 8px; height: 8px; border-radius: 50%; }
+/* + New bucket row at the top of the bucket list */
+.add-bucket-row {
+  display: flex; align-items: center; justify-content: flex-start;
+  padding: 6px 14px; height: 36px; box-sizing: border-box;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper-tint);
+}
+.add-bucket-btn {
+  background: transparent; border: 1px dashed var(--ink-3); color: var(--ink-2);
+  font-weight: 600; padding: 4px 14px; border-radius: 14px; cursor: pointer;
+  font-family: inherit; font-size: 12px;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.add-bucket-btn:hover { background: var(--paper); border-color: var(--ink); color: var(--ink); }
+.add-bucket-btn .plus { font-size: 14px; font-weight: 700; line-height: 1; }
+
+.bucket-toggle-all {
+  background: transparent; border: none; color: var(--ink-2);
+  font-size: 11px; cursor: pointer; padding: 4px 8px;
+  text-decoration: underline; text-decoration-color: var(--ink-3); text-underline-offset: 2px;
+  font-family: inherit;
+}
+.bucket-toggle-all:hover { color: var(--ink); text-decoration-color: var(--ink); }
+
+/* plan summary */
+.plan-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.plan-summary .metric { display: flex; flex-direction: column; gap: 2px; }
+.plan-summary .label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-3); }
+.plan-summary .value { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 500; }
+.plan-summary .metric.primary .value { color: var(--green-fg); }
+.plan-summary .metric.sub .label { font-style: italic; opacity: 0.85; }
+.plan-summary .metric.sub .value { font-style: italic; opacity: 0.85; color: var(--ink-2); font-weight: 400; }
+
+/* budgets */
+.budget-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.budget-field { display: flex; flex-direction: column; gap: 4px; }
+.budget-field .field-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-3); }
+.budget-field input { width: 100%; }
+
+/* timeline */
+.timeline-container { background: var(--paper); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.timeline-scroll { overflow: auto; max-height: calc(100vh - 48px); }
+.timeline-inner { display: flex; min-width: max-content; }
+
+.meta-col { flex-shrink: 0; background: var(--paper); border-right: 1px solid var(--line-strong); position: sticky; left: 0; z-index: 10; }
+.timeline-col { flex-shrink: 0; position: relative; }
+
+/* rollup strip + day headers */
+.rollup-strip { position: sticky; top: 0; z-index: 3; background: var(--paper); border-bottom: 1px solid var(--line-strong); }
+.rollup-row { display: flex; align-items: stretch; }
+.rollup-row.monthly { border-bottom: 1px solid var(--line); height: 110px; }
+.rollup-row.weekly  { height: 100px; }
+.rollup-cell { border-right: 1px solid var(--line); padding: 4px 6px; font-size: 10px; box-sizing: border-box; overflow: hidden; }
+.rollup-cell.monthly { padding: 6px 8px; }
+.rollup-cell.weekly  { padding: 4px 6px; }
+.rollup-cell .cell-title { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-3); margin-bottom: 4px; font-family: 'Hanken Grotesk', sans-serif; }
+.rollup-cell .metric-line {
+  font-family: 'JetBrains Mono', monospace; font-size: 9.5px; line-height: 1.35;
+  padding: 1px 3px; border-radius: 2px;
+  display: flex; justify-content: space-between; gap: 4px;
+  white-space: nowrap; overflow: hidden;
+}
+.rollup-cell .metric-line .label { color: var(--ink-2); font-family: 'Hanken Grotesk', sans-serif; }
+.rollup-cell .metric-line .val { font-weight: 500; }
+.rollup-cell .metric-line.muted .label,
+.rollup-cell .metric-line.muted .val { opacity: 0.7; font-weight: 400; font-style: italic; }
+.rollup-cell .metric-line.muted { padding-left: 8px; }
+.rollup-cell .metric-line.bold { padding-left: 8px; }
+.rollup-cell .metric-line.bold .label,
+.rollup-cell .metric-line.bold .val { font-weight: 700; }
+.rollup-cell .metric-line.lydia-row .label { text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+.rollup-cell .taylor-sub {
+  font-family: 'Hanken Grotesk', sans-serif; font-size: 9.5px; color: var(--ink);
+  text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 4px 0; margin-top: 2px;
+  border-top: 1px dotted var(--line); font-weight: 700;
+}
+
+/* meta col rollup — per-month summary (replaces both monthly+weekly legend cells) */
+.meta-summary {
+  background: var(--paper); display: flex; flex-direction: column;
+  padding: 8px 12px; box-sizing: border-box;
+}
+.meta-summary-title {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-3);
+  font-family: 'Hanken Grotesk', sans-serif; margin-bottom: 6px;
+}
+.month-summary-row {
+  display: flex; align-items: center; gap: 10px;
+  flex: 1; min-height: 0;
+  padding: 4px 0;
+  border-bottom: 1px dotted var(--line);
+}
+.month-summary-row:last-child { border-bottom: none; }
+.month-summary-row .month-name {
+  font-family: 'Fraunces', serif; font-size: 13px; font-weight: 500; color: var(--ink);
+  width: 110px; flex-shrink: 0;
+}
+.month-summary-row .month-metric {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 8px; border-radius: 3px;
+  flex: 1; justify-content: space-between; min-width: 0;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  white-space: nowrap;
+}
+.month-summary-row .month-metric .ml {
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 9px; text-transform: uppercase; letter-spacing: 0.07em;
+  font-weight: 600;
+}
+.month-summary-row .month-metric.metric-green { background: var(--green-bg); color: var(--green-fg); }
+.month-summary-row .month-metric.metric-amber { background: var(--amber-bg); color: var(--amber-fg); }
+.month-summary-row .month-metric.metric-red   { background: var(--red-bg);   color: var(--red-fg);   }
+.month-summary-row .month-metric.metric-neutral { background: var(--paper-tint); color: var(--ink-3); border: 1px solid var(--line); }
+.metric-green { background: var(--green-bg); color: var(--green-fg); }
+.metric-amber { background: var(--amber-bg); color: var(--amber-fg); }
+.metric-red   { background: var(--red-bg);   color: var(--red-fg); }
+.metric-neutral { background: transparent; color: var(--ink-3); }
+
+/* day header */
+.day-header-row { display: flex; height: 22px; border-bottom: 1px solid var(--line); background: var(--paper-tint); position: sticky; top: 210px; z-index: 3; }
+
+/* rollup-strip collapsed state — frees ~210px of vertical room for the bucket list */
+.timeline-container.rollup-collapsed .rollup-strip { display: none; }
+.timeline-container.rollup-collapsed .day-header-row { top: 0; }
+.day-cell { border-right: 1px solid var(--line); font-size: 10px; text-align: center; color: var(--ink-3); display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; }
+.day-cell.month-start { border-left: 1px solid var(--line-strong); }
+
+/* column header row (meta col) — sits under each bucket header */
+.col-header-row {
+  display: grid; grid-template-columns: 1fr 52px 88px 96px 64px;
+  gap: 0 14px; padding: 0 14px; align-items: center;
+  height: 22px; background: var(--paper-tint); border-bottom: 1px solid var(--line);
+}
+.col-header-label { font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-3); }
+.col-header-label.right { text-align: right; }
+.col-header-label.has-tooltip { position: relative; cursor: help; border-bottom: 1px dotted var(--ink-3); display: inline-block; padding-bottom: 1px; }
+.size-tooltip {
+  position: absolute; top: calc(100% + 4px); left: 0;
+  background: var(--paper); border: 1px solid var(--line-strong); border-radius: 6px;
+  padding: 6px 4px; box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  z-index: 50; visibility: hidden; opacity: 0; transition: opacity 0.12s ease;
+  text-transform: none; letter-spacing: normal; color: var(--ink); pointer-events: none;
+}
+.col-header-label.has-tooltip:hover .size-tooltip { visibility: visible; opacity: 1; }
+.size-tooltip table { border-collapse: collapse; font-size: 11px; }
+.size-tooltip th, .size-tooltip td { padding: 3px 12px; text-align: left; white-space: nowrap; }
+.size-tooltip th { font-weight: 600; color: var(--ink-2); font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--line); }
+.size-tooltip td.size-name { font-weight: 600; color: var(--ink); }
+.size-tooltip td.size-hours { font-family: 'JetBrains Mono', monospace; color: var(--ink-2); }
+
+/* matching spacer in timeline col so heights line up */
+.col-header-spacer { height: 22px; background: var(--paper-tint); border-bottom: 1px solid var(--line); }
+
+/* bucket headers — screenshot style */
+.bucket-block { border-bottom: 1px solid var(--line); }
+.bucket-header-row { display: flex; }
+.bucket-header {
+  display: flex; flex-wrap: nowrap; align-items: center; gap: 10px;
+  padding: 0 14px; height: 50px; width: 100%; box-sizing: border-box;
+  overflow: hidden;
+}
+.bucket-chevron {
+  font-size: 9px; color: var(--ink-2); cursor: pointer; user-select: none;
+  flex-shrink: 0; width: 10px;
+}
+.bucket-name { font-family: 'Fraunces', serif; font-weight: 600; font-size: 16px; color: var(--ink); }
+.bucket-meta-line { font-size: 13px; color: var(--ink-3); margin-left: 2px; white-space: nowrap; }
+.bucket-meta-line .sep { margin: 0 6px; color: var(--line-strong); }
+.bucket-meta-line .mono { font-family: 'JetBrains Mono', monospace; color: var(--ink-2); font-weight: 500; }
+
+/* row-level mini tags (status, agent) */
+.row-tag {
+  font-family: 'Hanken Grotesk', sans-serif; font-size: 8.5px; padding: 1px 5px;
+  border-radius: 2px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 500;
+  display: inline-block;
+}
+.row-tag.status-Working { background: #D5DEE5; color: #3D5A80; }
+.row-tag.status-Backlog { background: #E7ECEE; color: #6B7280; }
+.row-tag.agent { background: #DED5EA; color: #5B4B8A; }
+
+/* item rows — aligned to L/T bar tracks */
+.item-row { display: flex; height: 52px; border-top: 1px solid var(--line); background: var(--paper); box-sizing: border-box; }
+.item-row:hover { background: var(--paper-tint); }
+.item-row.backlog { opacity: 0.55; }
+
+.item-meta {
+  display: grid;
+  grid-template-columns: 1fr 52px 88px 96px 64px;
+  grid-template-rows: 26px 26px;
+  gap: 0 14px;
+  align-items: center;
+  padding: 0 14px;
+  width: 100%;
+  height: 52px;
+  box-sizing: border-box;
+}
+.item-name-cell {
+  grid-column: 1; grid-row: 1 / span 2;
+  display: flex; flex-direction: row; align-items: center; gap: 4px;
+  min-width: 0;
+}
+.item-name-stack {
+  display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0;
+  position: relative;
+}
+/* hover tooltip — shows full item name when hovering, hides while editing */
+.item-name-stack[data-fullname]:hover::after {
+  content: attr(data-fullname);
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 200;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 7px 11px;
+  border-radius: 4px;
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 12.5px;
+  font-weight: 400;
+  line-height: 1.4;
+  max-width: 480px;
+  white-space: normal;
+  word-wrap: break-word;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+  animation: nameTooltipIn 0.12s ease-out 0.3s both;
+}
+.item-name-stack:focus-within::after { display: none; }
+@keyframes nameTooltipIn {
+  from { opacity: 0; transform: translateY(-2px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.item-name-text { font-size: 13.5px; line-height: 1.3; color: var(--ink); }
+.item-name-tags { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; }
+.item-size-cell { grid-column: 2; grid-row: 1 / span 2; display: flex; align-items: center; }
+
+.size-tag {
+  font-family: 'Hanken Grotesk', sans-serif; font-size: 9.5px; padding: 2px 7px;
+  border-radius: 3px; background: var(--paper-tint); border: 1px solid var(--line);
+  color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 500;
+}
+
+.hrs-cell { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; display: flex; align-items: center; gap: 8px; }
+.hrs-cell .hrs-label { color: var(--ink-3); font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.06em; font-family: 'Hanken Grotesk', sans-serif; font-weight: 500; }
+.hrs-cell .hrs-value { color: var(--ink); font-weight: 500; }
+.hrs-L { grid-column: 5; grid-row: 1; align-self: center; }
+.hrs-T { grid-column: 5; grid-row: 2; align-self: center; }
+
+.due-cell {
+  grid-column: 3; grid-row: 1 / span 2;
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  text-align: right; color: var(--ink-2); align-self: center;
+}
+.status-cell { grid-column: 4; grid-row: 1 / span 2; display: flex; align-items: center; }
+.status-pill {
+  font-family: 'Hanken Grotesk', sans-serif; font-size: 9.5px; padding: 2px 7px;
+  border-radius: 3px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 500;
+  display: inline-block; white-space: nowrap;
+}
+.status-pill.status-Working     { background: #D5DEE5; color: #3D5A80; }
+.status-pill.status-Not-Started { background: var(--paper-tint); color: var(--ink-3); border: 1px solid var(--line); }
+.status-pill.status-Completed   { background: #DCE9D8; color: #4A6B3A; }
+.status-pill.status-Backlog     { background: #E7ECEE; color: #6B7280; }
+.due-cell.past-due { color: var(--today); font-weight: 500; }
+.due-cell.empty { color: var(--ink-3); }
+
+/* bars */
+.item-timeline { position: relative; height: 100%; min-height: 52px; }
+.bar-track { position: absolute; left: 0; right: 0; height: 17px; }
+/* bar tops chosen so bar centers land exactly on the grid-row centers (13 and 39) of the meta col,
+   with bar height 16 yielding integer centers regardless of sub-pixel rounding */
+.bar-track.lydia  { top: 5px; height: 16px; }
+.bar-track.taylor { top: 31px; height: 16px; }
+.time-bar { position: absolute; height: 16px; box-sizing: border-box; border-radius: 3px; border: 1px solid rgba(0,0,0,0.12); display: flex; align-items: center; padding: 0 6px; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: white; white-space: nowrap; overflow: hidden; cursor: grab; user-select: none; }
+.time-bar:active { cursor: grabbing; }
+.time-bar::before, .time-bar::after {
+  content: ''; position: absolute; top: 0; bottom: 0; width: 7px;
+  cursor: ew-resize;
+}
+.time-bar::before { left: 0; }
+.time-bar::after  { right: 0; }
+.time-bar.lydia  { background: var(--L-bar); }
+.time-bar.taylor { background: var(--T-bar); }
+.time-bar.empty { background: transparent; border: 1px dashed var(--line-strong); }
+.time-bar .bar-label { color: rgba(255,255,255,0.92); font-weight: 500; font-size: 10px; letter-spacing: 0; text-transform: none; margin: 0; }
+.bar-track.lydia.empty-track::before,
+.bar-track.taylor.empty-track::before {
+  content: ''; position: absolute; left: 4px; right: 4px; top: 7px; height: 3px;
+  background: repeating-linear-gradient(90deg, var(--line) 0, var(--line) 4px, transparent 4px, transparent 8px);
+  border-radius: 2px;
+}
+
+/* due diamond */
+.due-diamond {
+  position: absolute; width: 10px; height: 10px;
+  background: var(--ink); transform: rotate(45deg) translate(-50%, 0%);
+  transform-origin: 0 0;
+  top: 21px;
+  z-index: 4;
+}
+.due-diamond::after {
+  content: ''; position: absolute; inset: 2px;
+  background: var(--paper); transform: rotate(0);
+}
+
+/* utility */
+.help { font-size: 11px; color: var(--ink-3); margin-top: 4px; }
+.stub-banner { background: #E3F9F9; color: #00657A; border: 1px solid #9FD9DF; border-radius: 5px; padding: 8px 12px; margin-bottom: 12px; font-size: 12px; }
+
+/* inline editors — look like text until hovered/focused */
+.inline-edit {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  padding: 1px 4px;
+  margin: -1px -4px;
+  font: inherit;
+  color: inherit;
+  outline: none;
+  cursor: text;
+  box-sizing: border-box;
+}
+.inline-edit:hover { background: var(--paper); border-color: var(--line); }
+.inline-edit:focus { background: var(--paper-tint); border-color: var(--ink-2); }
+.inline-text { width: 100%; }
+.inline-number { width: 56px; text-align: left; -moz-appearance: textfield; }
+.inline-number::-webkit-outer-spin-button, .inline-number::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.inline-date { font-family: 'JetBrains Mono', monospace; font-size: 11px; width: 100%; }
+.inline-date-display { display: inline-block; min-width: 60px; text-align: right; cursor: pointer; }
+.inline-select {
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: none;
+  padding-right: 4px !important;
+}
+/* select pills (status, size) — override .inline-edit defaults so they fit cleanly inside their column */
+.inline-select.status-pill,
+.inline-select.size-tag {
+  margin: 0;
+  padding: 2px 7px;
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 500;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  width: 100%;
+  text-align: center;
+  text-align-last: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.inline-select.status-pill:hover,
+.inline-select.size-tag:hover { border-color: var(--ink-3); }
+.inline-select.size-tag { background: var(--paper-tint); color: var(--ink-2); border: 1px solid var(--line); }
+
+/* completed status — items mute like backlog */
+.item-row.completed { opacity: 0.6; }
+.item-row.completed .item-name-text { text-decoration: line-through; text-decoration-color: var(--ink-3); }
+.bucket-name-edit { font-family: 'Fraunces', serif; font-weight: 600; font-size: 16px; padding: 2px 6px; min-width: 200px; }
+.bucket-name { cursor: pointer; }
+.bucket-name:hover { background: rgba(0,0,0,0.04); border-radius: 3px; padding: 1px 4px; margin: -1px -4px; }
+
+/* agent toggle (checkbox) */
+.agent-toggle { display: inline-flex; align-items: center; cursor: pointer; }
+.agent-toggle input { display: none; }
+.row-tag.agent.off { background: var(--paper-tint); color: var(--ink-3); border: 1px dashed var(--line); opacity: 0.6; }
+
+/* drag handle for reorder (grip icon) */
+.row-drag-handle {
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: grab; user-select: none;
+  color: var(--ink-3); padding: 2px; min-width: 14px;
+  font-size: 14px; line-height: 1;
+  flex-shrink: 0; opacity: 0.4; transition: opacity 0.1s, color 0.1s;
+}
+.item-row:hover .row-drag-handle,
+.bucket-header-row:hover .row-drag-handle { opacity: 1; }
+.row-drag-handle:hover { color: var(--ink); }
+.row-drag-handle:active { cursor: grabbing; }
+
+/* drag visual states */
+.item-row.dragging, .bucket-block.dragging { opacity: 0.35; }
+.item-row.drop-target-before, .bucket-block.drop-target-before { box-shadow: inset 0 2px 0 0 var(--ink); }
+.item-row.drop-target-after, .bucket-block.drop-target-after { box-shadow: inset 0 -2px 0 0 var(--ink); }
+
+/* row delete button (× icon) — lives inside item-name-cell, revealed on row hover */
+.item-row { position: relative; }
+.row-delete-btn {
+  background: transparent; border: none; color: var(--ink-3); font-size: 14px;
+  width: 18px; height: 18px; min-width: 18px; border-radius: 50%;
+  cursor: pointer; opacity: 0; transition: opacity 0.1s, background 0.1s, color 0.1s;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; padding: 0; line-height: 1;
+}
+.item-row:hover .row-delete-btn { opacity: 1; }
+.row-delete-btn:hover { background: var(--red-bg); color: var(--red-fg); }
+
+/* bucket header icon button */
+.btn.icon-btn {
+  padding: 0; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 14px; line-height: 1; color: var(--ink-3);
+}
+.btn.icon-btn:hover { background: var(--red-bg); color: var(--red-fg); border-color: var(--red-fg); }
+.btn.danger { background: var(--red-bg); color: var(--red-fg); border-color: #C58A7A; }
+.btn.danger:hover { background: var(--red-fg); color: white; border-color: var(--red-fg); }
+
+/* modal */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(40,32,20,0.45); z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal {
+  background: var(--paper); border: 1px solid var(--line-strong); border-radius: 8px;
+  padding: 20px 24px; max-width: 440px; box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  font-family: 'Hanken Grotesk', sans-serif;
+}
+.modal-message { margin: 0 0 16px; font-size: 14px; line-height: 1.4; color: var(--ink); }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+/* GitHub sync UI */
+.gh-sync-bar { display: flex; align-items: center; gap: 8px; }
+.gh-status { font-size: 11px; color: var(--ink-3); }
+.gh-status.success { color: var(--green-fg); }
+.gh-status.error { color: var(--red-fg); }
+.gh-settings-modal { max-width: 500px; }
+.gh-settings-modal label { display: block; margin-bottom: 12px; font-size: 13px; color: var(--ink-2); }
+.gh-settings-modal input[type=text],
+.gh-settings-modal input[type=password] {
+  display: block; width: 100%; margin-top: 4px; padding: 6px 8px;
+  background: var(--paper-tint); border: 1px solid var(--line); border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+}
+.gh-settings-modal .help-text { font-size: 11px; color: var(--ink-3); margin-top: 4px; line-height: 1.4; }
+.btn.gh { background: #24292e; color: white; border-color: #24292e; }
+.btn.gh:hover { background: #444d56; }
+.btn.gh:disabled { background: #6a737d; border-color: #6a737d; }
+</style>
+</head>
+<body>
+<div id="root">Loading…</div>
+<script type="text/babel" data-presets="react">
+const { useState, useMemo, useEffect, useCallback } = React;
+
+/* ── Constants ── */
+const TIMELINE_START = new Date('2026-06-01T00:00:00');
+const TODAY = new Date('2026-06-02T00:00:00');
+// Timeline window — DEFAULT_WEEKDAYS is the baseline span shown on first load.
+// 88 = June 1 through end of September 2026 (~4 months). User can extend via "+ Month" button (each click adds ~22 weekdays).
+const DEFAULT_WEEKDAYS = 88;
+const WEEKDAYS_PER_MONTH = 22; // approximate; used by +/- Month controls
+const DAY_WIDTH = 24;          // px per weekday
+const META_WIDTH = 640;        // left meta columns
+
+/* ── Time grid (reactive — recomputes when visibleWeekdays state changes) ── */
+function isSameDay(a, b) { return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
+
+function computeDays(weekdays) {
+  const out = [];
+  const d = new Date(TIMELINE_START);
+  while (out.length < weekdays) {
+    const dow = d.getDay();
+    if (dow !== 0 && dow !== 6) {
+      out.push({
+        date: new Date(d),
+        index: out.length,
+        monthKey: d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'),
+        weekIndex: Math.floor(out.length / 5),
+        weekday: dow,
+        isMonStart: dow === 1,
+      });
+    }
+    d.setDate(d.getDate() + 1);
+  }
+  return out;
+}
+function computeWeeks(DAYS) {
+  const w = [];
+  for (const d of DAYS) {
+    if (!w[d.weekIndex]) w[d.weekIndex] = { index: d.weekIndex, days: [], start: d };
+    w[d.weekIndex].days.push(d);
+  }
+  return w;
+}
+function computeMonths(DAYS) {
+  const seen = {};
+  const out = [];
+  for (const d of DAYS) {
+    if (!seen[d.monthKey]) {
+      seen[d.monthKey] = { key: d.monthKey, days: [], label: d.date.toLocaleDateString('en-US', {month:'long', year:'numeric'}), shortLabel: d.date.toLocaleDateString('en-US', {month:'short', year:'2-digit'}) };
+      out.push(seen[d.monthKey]);
+    }
+    seen[d.monthKey].days.push(d);
+  }
+  return out;
+}
+
+// TODAY_INDEX is invariant under visibleWeekdays changes (TODAY and TIMELINE_START are constants).
+// Compute it once by counting weekdays between TIMELINE_START and TODAY.
+const TODAY_INDEX = (() => {
+  let idx = -1;
+  const d = new Date(TIMELINE_START);
+  while (!isSameDay(d, TODAY)) {
+    const dow = d.getDay();
+    if (dow !== 0 && dow !== 6) idx++;
+    d.setDate(d.getDate() + 1);
+  }
+  // include TODAY itself
+  const dow = TODAY.getDay();
+  if (dow !== 0 && dow !== 6) idx++;
+  return idx;
+})();
+
+// dueToIndex is defined inside App so it can close over the dynamic DAYS array.
+
+/* ── Data: 49-item baseline from 06/01/26 priority list (theme tier flattened into name where ambiguous) ── */
+const INITIAL_BUCKETS = [
+  { name: "MonetizeNow Implementation",    color: "#C8881C" },
+  { name: "GTM Reporting",                 color: "#0E7C7B" },
+  { name: "Inbound Automation",            color: "#C0623A" },
+  { name: "Salesforce <> Claude Integration", color: "#7A6B4A" },
+  { name: "Pipeline Agent",                color: "#5B4B8A" },
+  { name: "ABM Engine Agent",              color: "#4A6B7A" },
+  { name: "Salesforce General",            color: "#3D5A80" },
+  { name: "Data Clean Up & Enrichment",    color: "#6B8E5A" },
+  { name: "Contact Stage Review",          color: "#A4596B" },
+];
+const COLOR_PALETTE = [
+  "#C8881C", "#0E7C7B", "#C0623A", "#5B4B8A", "#3D5A80",
+  "#6B8E5A", "#A4596B", "#7A6B4A", "#4A6B7A",
+];
+const INITIAL_ITEMS = [
+  // ── MonetizeNow Implementation (12) ──
+  { id: 14, bucket: "MonetizeNow Implementation", name: "AdobeSign <> MN integration",                    size: "S",  status: "Not Started", L: 4,    T: 0,    agent: false, due: "2026-06-10" },
+  { id: 15, bucket: "MonetizeNow Implementation", name: "Salesforce <> MN integration",                   size: "XL", status: "Not Started", L: 10,   T: 40,   agent: false, due: "2026-06-12" },
+  { id: 22, bucket: "MonetizeNow Implementation", name: "Conditional Terms build (New/Renewal/Upsell)",   size: "M",  status: "Working",     L: 9,    T: 0,    agent: false, due: "2026-06-12" },
+  { id: 23, bucket: "MonetizeNow Implementation", name: "New Logo: Approval Rules",                       size: "S",  status: "Working",     L: 4.5,  T: 0,    agent: false, due: "2026-06-19" },
+  { id: 24, bucket: "MonetizeNow Implementation", name: "Renewal: Approval Rules",                        size: "S",  status: "Working",     L: 4.5,  T: 0,    agent: false, due: "2026-06-19" },
+  { id: 25, bucket: "MonetizeNow Implementation", name: "Upsell: Approval Rules",                         size: "S",  status: "Working",     L: 4.5,  T: 0,    agent: false, due: "2026-06-19" },
+  { id: 16, bucket: "MonetizeNow Implementation", name: "New Logo: Quote Creation",                       size: "S",  status: "Not Started", L: 5,    T: 0,    agent: false, due: "2026-06-26" },
+  { id: 17, bucket: "MonetizeNow Implementation", name: "Renewal: Quote Creation",                        size: "S",  status: "Not Started", L: 5,    T: 0,    agent: false, due: "2026-06-26" },
+  { id: 18, bucket: "MonetizeNow Implementation", name: "Upsell: Quote Creation",                         size: "S",  status: "Not Started", L: 5,    T: 0,    agent: false, due: "2026-06-26" },
+  { id: 19, bucket: "MonetizeNow Implementation", name: "Historical data imported into MN",               size: "M",  status: "Not Started", L: 15,   T: 0,    agent: false, due: "2026-06-30" },
+  { id: 20, bucket: "MonetizeNow Implementation", name: "New Logo: Enablement Documentation",             size: "S",  status: "Not Started", L: 4,    T: 0,    agent: false, due: "2026-07-01" },
+  { id: 21, bucket: "MonetizeNow Implementation", name: "Renewal & Upsell: Enablement Documentation",     size: "S",  status: "Not Started", L: 4,    T: 0,    agent: false, due: "2026-07-01" },
+
+  // ── GTM Reporting (5) ──
+  { id: 13, bucket: "GTM Reporting", name: "Move dashboard to be hosted in SF (live data)",  size: "L", status: "Working",     L: 0.25,  T: 2.25, agent: false, due: "2026-06-04" },
+  { id:  9, bucket: "GTM Reporting", name: "Rep level module",                                size: "M", status: "Not Started", L: 14.25, T: 0.75, agent: false, due: null },
+  { id: 10, bucket: "GTM Reporting", name: "Historical Trending module (NMP, Win Rate, ASP…)",size: "M", status: "Not Started", L: 14.25, T: 0.75, agent: false, due: null },
+  { id: 11, bucket: "GTM Reporting", name: "Build out forecasting module",                    size: "S", status: "Not Started", L: 9.5,   T: 0.5,  agent: false, due: null },
+  { id: 12, bucket: "GTM Reporting", name: "Adding GRR and NRR module",                       size: "L", status: "Not Started", L: 19,    T: 1,    agent: false, due: null },
+
+  // ── Inbound Automation (2) ──
+  { id: 40, bucket: "Inbound Automation", name: "Document & design inbound routing process",  size: "L", status: "Not Started", L: 8, T: 12, agent: false, due: null },
+  { id: 41, bucket: "Inbound Automation", name: "Build & implement inbound routing process",  size: "L", status: "Not Started", L: 2, T: 18, agent: false, due: null },
+
+  // ── Salesforce <> Claude Integration (2) ──
+  { id:  5, bucket: "Salesforce <> Claude Integration", name: "Create MCP enablement documentation", size: "S", status: "Not Started", L: 0.9, T: 2.1, agent: true, due: "2026-06-01" },
+  { id:  6, bucket: "Salesforce <> Claude Integration", name: "Rollout Production MCP",              size: "S", status: "Not Started", L: 0.2, T: 1.8, agent: true, due: "2026-06-02" },
+
+  // ── Pipeline Agent (13) — sub-agents kept as name prefix to disambiguate within bucket ──
+  { id: 27, bucket: "Pipeline Agent", name: "Next Step Scoring Agent: Build & deploy (pull, score, push to SF)",      size: "M", status: "Not Started", L: 3,   T: 12,  agent: true, due: null },
+  { id: 28, bucket: "Pipeline Agent", name: "Next Step Scoring Agent: Rep-facing enablement materials",               size: "S", status: "Not Started", L: 0.4, T: 1.6, agent: true, due: null },
+  { id: 29, bucket: "Pipeline Agent", name: "MEDDPICC Agent: Build out call assessment",                               size: "S", status: "Not Started", L: 6,   T: 4,   agent: true, due: null },
+  { id: 30, bucket: "Pipeline Agent", name: "MEDDPICC Agent: Push assessment to SF 'AI MEDDPICC' fields",              size: "S", status: "Not Started", L: 0.4, T: 3.6, agent: true, due: null },
+  { id: 31, bucket: "Pipeline Agent", name: "Risk Scoring Agent: Build, iterate & finalize rubric",                    size: "S", status: "Not Started", L: 0,   T: 5,   agent: true, due: null },
+  { id: 32, bucket: "Pipeline Agent", name: "Risk Scoring Agent: Build & deploy (pull, score, push to SF)",            size: "M", status: "Not Started", L: 3,   T: 12,  agent: true, due: null },
+  { id: 33, bucket: "Pipeline Agent", name: "Risk Scoring Agent: Rep-facing enablement materials",                     size: "S", status: "Not Started", L: 0.4, T: 1.6, agent: true, due: null },
+  { id: 34, bucket: "Pipeline Agent", name: "Qualification of Pain Agent: Build, iterate & finalize rubric",           size: "S", status: "Not Started", L: 0,   T: 5,   agent: true, due: null },
+  { id: 35, bucket: "Pipeline Agent", name: "Qualification of Pain Agent: Build & deploy (pull, score, push to SF)",   size: "M", status: "Not Started", L: 3,   T: 12,  agent: true, due: null },
+  { id: 36, bucket: "Pipeline Agent", name: "Qualification of Pain Agent: Rep-facing enablement materials",            size: "S", status: "Not Started", L: 0.4, T: 1.6, agent: true, due: null },
+  { id: 37, bucket: "Pipeline Agent", name: "Pipeline Health Agent: Build, iterate & finalize rubric",                 size: "S", status: "Not Started", L: 0,   T: 5,   agent: true, due: null },
+  { id: 38, bucket: "Pipeline Agent", name: "Pipeline Health Agent: Build & deploy (pull, score, push to SF)",         size: "M", status: "Not Started", L: 3,   T: 12,  agent: true, due: null },
+  { id: 39, bucket: "Pipeline Agent", name: "Pipeline Health Agent: Rep-facing enablement materials",                  size: "S", status: "Not Started", L: 0.4, T: 1.6, agent: true, due: null },
+
+  // ── ABM Engine Agent (2) ──
+  { id: 42, bucket: "ABM Engine Agent", name: "Scoping",                          size: "M",  status: "Not Started", L: 3,  T: 12, agent: true, due: null },
+  { id: 43, bucket: "ABM Engine Agent", name: "Build (placeholder until scoped)", size: "XL", status: "Not Started", L: 12, T: 48, agent: true, due: null },
+
+  // ── Salesforce General (7) ──
+  { id: 44, bucket: "Salesforce General", name: "Opp Mgmt: Dollar General <> Service Provider accts", size: "M", status: "Not Started", L: 8,   T: 12,   agent: false, due: null },
+  { id: 45, bucket: "Salesforce General", name: "Opp Mgmt: CW affiliate opps in SF",                  size: "M", status: "Not Started", L: 8,   T: 12,   agent: false, due: null },
+  { id: 50, bucket: "Salesforce General", name: "Page layout audit on all objects",                   size: "S", status: "Not Started", L: 4,   T: 1,    agent: false, due: null },
+  { id: 51, bucket: "Salesforce General", name: "Field audit across all objects",                     size: "L", status: "Working",     L: 4.8, T: 19.2, agent: false, due: null },
+  { id: 54, bucket: "Salesforce General", name: "Review Veltig FT/LT campaign work",                  size: "S", status: "Backlog",     L: 0,   T: 10,   agent: false, due: null },
+  { id: 55, bucket: "Salesforce General", name: "Evaluate Einstein activity capture",                 size: "S", status: "Backlog",     L: 1.5, T: 3.5,  agent: false, due: null },
+  { id: 56, bucket: "Salesforce General", name: "Flow / automation audit",                            size: "L", status: "Backlog",     L: 0,   T: 40,   agent: false, due: null },
+
+  // ── Data Clean Up & Enrichment (4) ──
+  { id: 46, bucket: "Data Clean Up & Enrichment", name: "Review contacts to identify for archive", size: "S", status: "Not Started", L: 2.4, T: 1.6, agent: false, due: null },
+  { id: 47, bucket: "Data Clean Up & Enrichment", name: "Archive identified junk contacts",        size: "S", status: "Not Started", L: 0,   T: 1,   agent: false, due: null },
+  { id: 48, bucket: "Data Clean Up & Enrichment", name: "De-dup Accounts",                          size: "S", status: "Not Started", L: 1.6, T: 6.4, agent: false, due: null },
+  { id: 49, bucket: "Data Clean Up & Enrichment", name: "Update De-dupe Process",                  size: "S", status: "Not Started", L: 0.2, T: 1.8, agent: false, due: null },
+
+  // ── Contact Stage Review (2) ──
+  { id: 52, bucket: "Contact Stage Review", name: "Documenting Contact Stages",                       size: "S", status: "Not Started", L: 2.4, T: 9.6, agent: false, due: null },
+  { id: 53, bucket: "Contact Stage Review", name: "Review contact stage process & implement changes", size: "S", status: "Not Started", L: 3,   T: 3,   agent: false, due: null },
+];
+const SIZES = ["S", "M", "L", "XL"];
+const STATUSES = ["Not Started", "Working", "Completed", "Backlog"];
+
+/* ── localStorage scenario storage ── */
+const WORKING_KEY    = 'revops_planner_v2_working';
+const SCENARIOS_KEY  = 'revops_planner_v2_scenarios';
+const ACTIVE_KEY     = 'revops_planner_v2_active';
+function lsGet(key) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; } catch (_) { return null; } }
+function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (_) {} }
+function lsDel(key)      { try { localStorage.removeItem(key); } catch (_) {} }
+const RESTORED = lsGet(WORKING_KEY) || {};
+
+/* ── GitHub sync ── */
+const GH_PAT_KEY  = 'revops_planner_gh_pat';
+const GH_REPO_KEY = 'revops_planner_gh_repo';
+const GH_FILE     = 'state.json';
+
+async function ghApiGet(repo, pat, path) {
+  const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+    headers: { 'Authorization': `token ${pat}`, 'Accept': 'application/vnd.github.v3+json' },
+  });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`GitHub API ${res.status}: ${await res.text()}`);
+  return res.json();
+}
+
+async function ghLoadState(repo, pat) {
+  const file = await ghApiGet(repo, pat, GH_FILE);
+  if (!file) return null;
+  const json = atob(file.content.replace(/\n/g, ''));
+  return { data: JSON.parse(json), sha: file.sha };
+}
+
+async function ghSaveState(repo, pat, snapshot) {
+  const existing = await ghApiGet(repo, pat, GH_FILE);
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(snapshot, null, 2))));
+  const body = {
+    message: 'Update planner state — ' + new Date().toLocaleString(),
+    content,
+  };
+  if (existing) body.sha = existing.sha;
+  const res = await fetch(`https://api.github.com/repos/${repo}/contents/${GH_FILE}`, {
+    method: 'PUT',
+    headers: { 'Authorization': `token ${pat}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`GitHub API ${res.status}: ${await res.text()}`);
+  return res.json();
+}
+
+/* default placement: Working → start at June 1 (idx 0); Not Started → start at today (TODAY_INDEX) */
+function defaultPlacement(item) {
+  const start = item.status === 'Working' ? 0 : TODAY_INDEX;
+  return {
+    L: { start, length: Math.max(1, Math.ceil((item.L || 0) / 4)) },
+    T: { start, length: Math.max(1, Math.ceil((item.T || 0) / 4)) },
+  };
+}
+function initialPlacements() {
+  return Object.fromEntries(INITIAL_ITEMS.map(it => [it.id, defaultPlacement(it)]));
+}
+
+/* ── Allocation math: daily, then aggregated ── */
+function computeAllocations(items, placements, numDays) {
+  const L = new Array(numDays).fill(0);
+  const Ta = new Array(numDays).fill(0);
+  const Tn = new Array(numDays).fill(0);
+  for (const it of items) {
+    const p = placements[it.id]; if (!p) continue;
+    if (it.L > 0) {
+      const per = it.L / p.L.length;
+      for (let i = 0; i < p.L.length; i++) {
+        const idx = p.L.start + i; if (idx >= 0 && idx < numDays) L[idx] += per;
+      }
+    }
+    if (it.T > 0) {
+      const per = it.T / p.T.length;
+      const pool = it.agent ? Ta : Tn;
+      for (let i = 0; i < p.T.length; i++) {
+        const idx = p.T.start + i; if (idx >= 0 && idx < numDays) pool[idx] += per;
+      }
+    }
+  }
+  return { L, Ta, Tn };
+}
+
+function sumGroup(alloc, indices) {
+  let L=0, Ta=0, Tn=0;
+  for (const i of indices) { L+=alloc.L[i]; Ta+=alloc.Ta[i]; Tn+=alloc.Tn[i]; }
+  return { L, Ta, Tn, T: Ta+Tn };
+}
+
+/* ── Budgets ── */
+function weeklyBudgets(budgets) {
+  const lwk = num(budgets.lydiaWeekly);
+  const ceil = num(budgets.taylorWeeklyCeiling);
+  const buf  = num(budgets.bufferHrs);
+  // Effective weekly Taylor schedulable = ceil - buf  (buffer INSIDE the ceiling per spec §4.1)
+  const tWeekly = Math.max(0, ceil - buf);
+  return { L: lwk, T: tWeekly, agent: null, naWeekly: null };  // agent/na split is monthly-driven
+}
+
+function monthlyBudgets(budgets, monthDays) {
+  const weeks = Math.max(1, monthDays.length / 5);  // approx weeks in this month's visible window
+  const lwk = num(budgets.lydiaWeekly);
+  const tMonthlyAgent = numOrNull(budgets.taylorAgentMonthly);
+  const tMonthlyNa    = num(budgets.taylorNonAgentMonthly);
+  const ceil = num(budgets.taylorWeeklyCeiling);
+  const buf  = num(budgets.bufferHrs);
+  const tCombinedMonthlyCap = (ceil - buf) * weeks;  // hard cap from weekly ceiling
+  // Effective non-agent budget: monthly - buffer*weeks
+  const tNaEff = Math.max(0, tMonthlyNa - buf * weeks);
+  return {
+    L: lwk * weeks,
+    agent: tMonthlyAgent,                       // may be null (blank)
+    nonAgent: tNaEff,
+    Tcombined: tMonthlyAgent != null
+      ? Math.min(tMonthlyAgent + tNaEff, tCombinedMonthlyCap)
+      : null,  // unknown until agent budget is set
+  };
+}
+
+function num(v) { const n = Number(v); return isFinite(n) ? n : 0; }
+function numOrNull(v) { if (v === '' || v == null) return null; const n = Number(v); return isFinite(n) ? n : null; }
+function r1(n) { return Math.round(n * 10) / 10; }
+
+function colorFor(used, budget) {
+  if (budget == null) return 'neutral';
+  if (used > budget + 0.5) return 'red';
+  if (Math.abs(used - budget) <= 0.5) return 'amber';
+  return 'green';
+}
+
+/* ── Components ── */
+function App() {
+  // Lazy-initialize state from localStorage if a working scenario exists; otherwise use baseline defaults
+  const [hidden, setHidden] = useState(() => new Set(RESTORED.hidden || []));
+  const [includeBacklog, setIncludeBacklog] = useState(() => RESTORED.includeBacklog ?? false);
+  const [budgets, setBudgets] = useState(() => RESTORED.budgets || {
+    lydiaWeekly: 30,
+    taylorAgentMonthly: '',
+    taylorNonAgentMonthly: 60,
+    taylorWeeklyCeiling: 35,
+    bufferHrs: 4,
+  });
+  const [placements, setPlacements] = useState(() => RESTORED.placements || initialPlacements());
+  const [items, setItems] = useState(() => RESTORED.items || INITIAL_ITEMS);
+  const [buckets, setBuckets] = useState(() => RESTORED.buckets || INITIAL_BUCKETS);
+  const [confirmModal, setConfirmModal] = useState(null);
+  // confirmModal = { message, onConfirm } | null
+  const [drag, setDrag] = useState(null);
+  // ── DnD state for reordering rows/buckets (step 5) ──
+  const [draggedRow, setDraggedRow] = useState(null);
+  // draggedRow = { type: 'bucket'|'item', id } | null
+  const [dropTarget, setDropTarget] = useState(null);
+  // dropTarget = { type, id, position: 'before'|'after' } | null
+  // ── Scenarios (step 6) ──
+  const [scenarios, setScenarios] = useState(() => lsGet(SCENARIOS_KEY) || {});
+  const [activeName, setActiveName] = useState(() => lsGet(ACTIVE_KEY) || null);
+
+  // ── Timeline range — user can extend with +Month ──
+  const [visibleWeekdays, setVisibleWeekdays] = useState(() => RESTORED.visibleWeekdays || DEFAULT_WEEKDAYS);
+
+  // ── Rollup strip collapse (UI only — not persisted to scenarios) ──
+  const [rollupCollapsed, setRollupCollapsed] = useState(false);
+
+  // ── GitHub sync state ──
+  const [ghPat, setGhPat] = useState(() => lsGet(GH_PAT_KEY) || '');
+  const [ghRepo, setGhRepo] = useState(() => lsGet(GH_REPO_KEY) || 'taylor834-sketch/revops-planner');
+  const [ghStatus, setGhStatus] = useState(null); // { type: 'success'|'error'|'loading', msg }
+  const [ghSettingsOpen, setGhSettingsOpen] = useState(false);
+
+  useEffect(() => { lsSet(GH_PAT_KEY, ghPat); }, [ghPat]);
+  useEffect(() => { lsSet(GH_REPO_KEY, ghRepo); }, [ghRepo]);
+
+  const ghSave = useCallback(async () => {
+    if (!ghPat || !ghRepo) { setGhSettingsOpen(true); return; }
+    setGhStatus({ type: 'loading', msg: 'Saving to GitHub…' });
+    try {
+      const snap = currentSnapshot();
+      snap.scenarios = scenarios;
+      snap.activeName = activeName;
+      await ghSaveState(ghRepo, ghPat, snap);
+      setGhStatus({ type: 'success', msg: 'Saved to GitHub ✓' });
+    } catch (err) {
+      setGhStatus({ type: 'error', msg: 'Save failed: ' + err.message });
+    }
+  }, [ghPat, ghRepo, items, buckets, placements, budgets, hidden, includeBacklog, visibleWeekdays, scenarios, activeName]);
+
+  const ghLoad = useCallback(async () => {
+    if (!ghPat || !ghRepo) { setGhSettingsOpen(true); return; }
+    setGhStatus({ type: 'loading', msg: 'Loading from GitHub…' });
+    try {
+      const result = await ghLoadState(ghRepo, ghPat);
+      if (!result) { setGhStatus({ type: 'error', msg: 'No state.json found in repo' }); return; }
+      const data = result.data;
+      applySnapshot(data);
+      if (data.scenarios) setScenarios(data.scenarios);
+      if (data.activeName) setActiveName(data.activeName);
+      setGhStatus({ type: 'success', msg: 'Loaded from GitHub ✓' });
+    } catch (err) {
+      setGhStatus({ type: 'error', msg: 'Load failed: ' + err.message });
+    }
+  }, [ghPat, ghRepo]);
+
+  // Reactive time grid
+  const DAYS = useMemo(() => computeDays(visibleWeekdays), [visibleWeekdays]);
+  const WEEKS = useMemo(() => computeWeeks(DAYS), [DAYS]);
+  const MONTHS = useMemo(() => computeMonths(DAYS), [DAYS]);
+
+  function dueToIndex(due) {
+    if (!due) return null;
+    const dt = new Date(due + 'T00:00:00');
+    for (let i = 0; i < DAYS.length; i++) {
+      if (DAYS[i].date.getFullYear() === dt.getFullYear()
+        && DAYS[i].date.getMonth() === dt.getMonth()
+        && DAYS[i].date.getDate() === dt.getDate()) return i;
+      if (DAYS[i].date > dt) return i - 0.5; // due fell on a weekend → between
+    }
+    return null;
+  }
+
+  // Auto-save working state to localStorage on every change
+  useEffect(() => {
+    lsSet(WORKING_KEY, { items, buckets, placements, budgets, hidden: Array.from(hidden), includeBacklog, visibleWeekdays });
+  }, [items, buckets, placements, budgets, hidden, includeBacklog, visibleWeekdays]);
+  useEffect(() => { lsSet(SCENARIOS_KEY, scenarios); }, [scenarios]);
+  useEffect(() => { if (activeName) lsSet(ACTIVE_KEY, activeName); else lsDel(ACTIVE_KEY); }, [activeName]);
+
+  // ── Item & bucket mutations ──
+  function updateItem(id, patch) {
+    setItems(prev => prev.map(it => it.id === id ? { ...it, ...patch } : it));
+  }
+  function addItem(bucketName) {
+    const newId = items.length ? Math.max(...items.map(it => it.id)) + 1 : 1;
+    const newItem = {
+      id: newId, bucket: bucketName, name: "New item",
+      size: "M", status: "Not Started", L: 0, T: 0,
+      agent: /agent|mcp/i.test(bucketName), due: null,
+    };
+    setItems(prev => [...prev, newItem]);
+    setPlacements(prev => ({ ...prev, [newId]: defaultPlacement(newItem) }));
+  }
+  function deleteItem(id) {
+    const it = items.find(x => x.id === id);
+    if (!it) return;
+    setConfirmModal({
+      message: `Delete "${it.name}"? This cannot be undone.`,
+      onConfirm: () => {
+        setItems(prev => prev.filter(x => x.id !== id));
+        setPlacements(prev => {
+          const out = { ...prev }; delete out[id]; return out;
+        });
+      },
+    });
+  }
+  function addBucket() {
+    const used = new Set(buckets.map(b => b.color));
+    const color = COLOR_PALETTE.find(c => !used.has(c)) || COLOR_PALETTE[0];
+    let name = "New bucket";
+    let i = 1;
+    while (buckets.some(b => b.name === name)) name = "New bucket " + (++i);
+    setBuckets(prev => [{ name, color }, ...prev]);
+  }
+  function renameBucket(oldName, newName) {
+    newName = (newName || "").trim();
+    if (!newName || newName === oldName) return;
+    if (buckets.some(b => b.name === newName)) return; // duplicate guard
+    setBuckets(prev => prev.map(b => b.name === oldName ? { ...b, name: newName } : b));
+    setItems(prev => prev.map(it => it.bucket === oldName ? { ...it, bucket: newName } : it));
+  }
+  function deleteBucket(name) {
+    const itemsInBucket = items.filter(it => it.bucket === name);
+    setConfirmModal({
+      message: `Delete bucket "${name}"? This will also delete ${itemsInBucket.length} item${itemsInBucket.length===1?'':'s'} inside.`,
+      onConfirm: () => {
+        setBuckets(prev => prev.filter(b => b.name !== name));
+        setItems(prev => prev.filter(it => it.bucket !== name));
+        setPlacements(prev => {
+          const out = { ...prev };
+          for (const it of itemsInBucket) delete out[it.id];
+          return out;
+        });
+      },
+    });
+  }
+
+  // ── DnD reorder helpers ──
+  function reorderItem(srcId, tgtId, position) {
+    if (srcId === tgtId) return;
+    setItems(prev => {
+      const src = prev.find(it => it.id === srcId);
+      const tgt = prev.find(it => it.id === tgtId);
+      if (!src || !tgt) return prev;
+      const list = prev.filter(it => it.id !== srcId);
+      let tgtIdx = list.findIndex(it => it.id === tgtId);
+      if (position === 'after') tgtIdx += 1;
+      return [
+        ...list.slice(0, tgtIdx),
+        { ...src, bucket: tgt.bucket },
+        ...list.slice(tgtIdx),
+      ];
+    });
+  }
+  function moveItemToBucket(itemId, bucketName, atTop) {
+    setItems(prev => {
+      const item = prev.find(it => it.id === itemId);
+      if (!item) return prev;
+      const list = prev.filter(it => it.id !== itemId);
+      const newItem = { ...item, bucket: bucketName };
+      if (atTop) {
+        const firstInTarget = list.findIndex(it => it.bucket === bucketName);
+        if (firstInTarget === -1) return [...list, newItem];
+        return [...list.slice(0, firstInTarget), newItem, ...list.slice(firstInTarget)];
+      } else {
+        // append after last item in target bucket
+        let lastInTarget = -1;
+        for (let i = 0; i < list.length; i++) if (list[i].bucket === bucketName) lastInTarget = i;
+        if (lastInTarget === -1) return [...list, newItem];
+        return [...list.slice(0, lastInTarget+1), newItem, ...list.slice(lastInTarget+1)];
+      }
+    });
+  }
+  function reorderBucket(srcName, tgtName, position) {
+    if (srcName === tgtName) return;
+    setBuckets(prev => {
+      const src = prev.find(b => b.name === srcName);
+      if (!src) return prev;
+      const list = prev.filter(b => b.name !== srcName);
+      let tgtIdx = list.findIndex(b => b.name === tgtName);
+      if (tgtIdx === -1) return prev;
+      if (position === 'after') tgtIdx += 1;
+      return [...list.slice(0, tgtIdx), src, ...list.slice(tgtIdx)];
+    });
+  }
+
+  // ── DnD event handlers ──
+  function onRowDragStart(e, type, id) {
+    setDraggedRow({ type, id });
+    e.dataTransfer.effectAllowed = 'move';
+    // set drag image to be subtle; default is the element itself
+    try { e.dataTransfer.setData('text/plain', String(id)); } catch (_) {}
+  }
+  function onRowDragOver(e, type, id) {
+    if (!draggedRow) return;
+    // Only allow valid combinations
+    if (draggedRow.type === 'bucket' && type !== 'bucket') return;
+    if (draggedRow.type === 'item' && draggedRow.id === id && type === 'item') return;
+    e.preventDefault();
+    // Stop bubbling so an item-row drag doesn't get overridden by the parent bucket-block
+    if (type === 'item') e.stopPropagation();
+    e.dataTransfer.dropEffect = 'move';
+    const rect = e.currentTarget.getBoundingClientRect();
+    const position = (e.clientY - rect.top) < rect.height / 2 ? 'before' : 'after';
+    if (!dropTarget || dropTarget.type !== type || dropTarget.id !== id || dropTarget.position !== position) {
+      setDropTarget({ type, id, position });
+    }
+  }
+  function onRowDrop(e, type, id) {
+    e.preventDefault();
+    // Stop bubbling so an item drop isn't also handled by the parent bucket
+    if (type === 'item') e.stopPropagation();
+    if (!draggedRow) return;
+    const position = dropTarget ? dropTarget.position : 'before';
+    if (draggedRow.type === 'item' && type === 'item') {
+      reorderItem(draggedRow.id, id, position);
+    } else if (draggedRow.type === 'item' && type === 'bucket') {
+      moveItemToBucket(draggedRow.id, id, position === 'before');
+    } else if (draggedRow.type === 'bucket' && type === 'bucket') {
+      reorderBucket(draggedRow.id, id, position);
+    }
+    setDraggedRow(null);
+    setDropTarget(null);
+  }
+  function onRowDragEnd() {
+    setDraggedRow(null);
+    setDropTarget(null);
+  }
+
+  // ── Scenarios ──
+  function currentSnapshot() {
+    return {
+      items, buckets, placements, budgets,
+      hidden: Array.from(hidden), includeBacklog,
+      visibleWeekdays,
+      savedAt: new Date().toISOString(),
+    };
+  }
+  function applySnapshot(snap) {
+    if (!snap) return;
+    if (snap.items) setItems(snap.items);
+    if (snap.buckets) setBuckets(snap.buckets);
+    if (snap.placements) setPlacements(snap.placements);
+    if (snap.budgets) setBudgets(snap.budgets);
+    setHidden(new Set(snap.hidden || []));
+    setIncludeBacklog(snap.includeBacklog ?? false);
+    if (snap.visibleWeekdays) setVisibleWeekdays(snap.visibleWeekdays);
+  }
+  function saveAsScenario() {
+    const name = (prompt('Save this scenario as:') || '').trim();
+    if (!name) return;
+    if (scenarios[name]) {
+      if (!confirm(`Scenario "${name}" already exists. Overwrite?`)) return;
+    }
+    setScenarios(prev => ({ ...prev, [name]: currentSnapshot() }));
+    setActiveName(name);
+  }
+  function saveCurrent() {
+    if (!activeName) { saveAsScenario(); return; }
+    setScenarios(prev => ({ ...prev, [activeName]: currentSnapshot() }));
+  }
+  function duplicateScenario() {
+    if (!activeName) { saveAsScenario(); return; }
+    const proposal = activeName + ' (copy)';
+    const name = (prompt('Duplicate as:', proposal) || '').trim();
+    if (!name) return;
+    if (scenarios[name]) { alert('A scenario with that name already exists.'); return; }
+    setScenarios(prev => ({ ...prev, [name]: currentSnapshot() }));
+    setActiveName(name);
+  }
+  function deleteScenario() {
+    if (!activeName) return;
+    setConfirmModal({
+      message: `Delete saved scenario "${activeName}"? Your working state stays unchanged.`,
+      onConfirm: () => {
+        setScenarios(prev => { const out = { ...prev }; delete out[activeName]; return out; });
+        setActiveName(null);
+      },
+    });
+  }
+  function switchScenario(name) {
+    if (!name) { setActiveName(null); return; }
+    const snap = scenarios[name];
+    if (!snap) return;
+    applySnapshot(snap);
+    setActiveName(name);
+  }
+  function downloadJSON(payload, filename) {
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+  function exportJSON() {
+    const snap = currentSnapshot();
+    const name = activeName || 'untitled';
+    const payload = { name, ...snap };
+    downloadJSON(payload, new Date().toISOString().slice(0,10) + '_' + name.replace(/[^a-z0-9-]+/gi, '-').toLowerCase() + '.json');
+  }
+  function exportAllScenarios() {
+    const scenarioCount = Object.keys(scenarios).length;
+    if (scenarioCount === 0) {
+      if (!confirm('You have no saved scenarios yet. Export the working state only as a bundle?')) return;
+    }
+    const payload = {
+      type: 'scenario-bundle',
+      exportedAt: new Date().toISOString(),
+      active: activeName,
+      working: currentSnapshot(),
+      scenarios: scenarios,
+    };
+    downloadJSON(payload, new Date().toISOString().slice(0,10) + '_revops-planner-bundle-' + scenarioCount + '-scenarios.json');
+  }
+  function importJSON(e) {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = ''; // allow re-importing the same file
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const data = JSON.parse(evt.target.result);
+        if (data.type === 'scenario-bundle') {
+          // Bundle import — merge scenarios + restore working + set active
+          const incomingNames = Object.keys(data.scenarios || {});
+          const conflicts = incomingNames.filter(n => scenarios[n]);
+          const conflictMsg = conflicts.length
+            ? `\n\n${conflicts.length} scenario name${conflicts.length===1?'':'s'} already exist and will be overwritten: ${conflicts.slice(0,3).join(', ')}${conflicts.length>3?'…':''}`
+            : '';
+          if (!confirm(`Import bundle with ${incomingNames.length} scenario${incomingNames.length===1?'':'s'}? This will also replace your current working state.${conflictMsg}`)) return;
+          setScenarios(prev => ({ ...prev, ...(data.scenarios || {}) }));
+          if (data.working) applySnapshot(data.working);
+          if (data.active && data.scenarios && data.scenarios[data.active]) {
+            setActiveName(data.active);
+          } else {
+            setActiveName(null);
+          }
+        } else {
+          // Single scenario import
+          applySnapshot(data);
+          if (data.name) {
+            setScenarios(prev => ({ ...prev, [data.name]: data }));
+            setActiveName(data.name);
+          } else {
+            setActiveName(null);
+          }
+        }
+      } catch (err) {
+        alert('Could not parse that file — is it a planner JSON export?');
+      }
+    };
+    reader.readAsText(file);
+  }
+  function resetToBaseline() {
+    setConfirmModal({
+      message: 'Reset to the 49-item 06/01/26 baseline? Your working state will be replaced. Saved scenarios are kept.',
+      onConfirm: () => {
+        setItems(INITIAL_ITEMS);
+        setBuckets(INITIAL_BUCKETS);
+        setPlacements(initialPlacements());
+        setHidden(new Set());
+        setIncludeBacklog(false);
+        setBudgets({ lydiaWeekly: 30, taylorAgentMonthly: '', taylorNonAgentMonthly: 60, taylorWeeklyCeiling: 35, bufferHrs: 4 });
+        setVisibleWeekdays(DEFAULT_WEEKDAYS);
+        setActiveName(null);
+      },
+    });
+  }
+  // drag = { itemId, person: 'L'|'T', mode: 'move'|'resize-l'|'resize-r', startX, origStart, origLength }
+
+  // Mouse/pointer handlers for bar dragging
+  useEffect(() => {
+    if (!drag) return;
+    function onMove(e) {
+      const deltaPx = e.clientX - drag.startX;
+      const deltaDays = Math.round(deltaPx / DAY_WIDTH);
+      setPlacements(prev => {
+        const itemP = prev[drag.itemId];
+        const cur = itemP[drag.person];
+        let start = cur.start, length = cur.length;
+        if (drag.mode === 'move') {
+          start = drag.origStart + deltaDays;
+          // clamp: keep bar within timeline window
+          start = Math.max(0, Math.min(DAYS.length - drag.origLength, start));
+          length = drag.origLength;
+        } else if (drag.mode === 'resize-l') {
+          const newStart = Math.max(0, drag.origStart + deltaDays);
+          const cap = drag.origStart + drag.origLength - 1; // can't pass right edge
+          start = Math.min(newStart, cap);
+          length = drag.origStart + drag.origLength - start;
+          length = Math.max(1, length);
+        } else if (drag.mode === 'resize-r') {
+          length = Math.max(1, drag.origLength + deltaDays);
+          length = Math.min(DAYS.length - cur.start, length);
+          start = cur.start;
+        }
+        return { ...prev, [drag.itemId]: { ...itemP, [drag.person]: { start, length } } };
+      });
+    }
+    function onUp() { setDrag(null); }
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = drag.mode === 'move' ? 'grabbing' : 'ew-resize';
+    return () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      document.body.style.userSelect = '';
+      document.body.style.cursor = '';
+    };
+  }, [drag]);
+
+  function startBarDrag(e, itemId, person) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const offsetInBar = e.clientX - rect.left;
+    const EDGE = 7; // px from each end that triggers resize
+    let mode = 'move';
+    if (offsetInBar < EDGE) mode = 'resize-l';
+    else if (offsetInBar > rect.width - EDGE) mode = 'resize-r';
+    const cur = placements[itemId][person];
+    setDrag({ itemId, person, mode, startX: e.clientX, origStart: cur.start, origLength: cur.length });
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  const visibleItems = useMemo(() => items.filter(it => !hidden.has(it.bucket)), [hidden, items]);
+  // Items counted in rollups + plan totals. When backlog toggle off, exclude backlog items.
+  const rollupItems = useMemo(() =>
+    includeBacklog ? visibleItems : visibleItems.filter(it => it.status !== 'Backlog'),
+    [visibleItems, includeBacklog]);
+  const alloc = useMemo(() => computeAllocations(rollupItems, placements, DAYS.length), [rollupItems, placements, DAYS]);
+
+  // Plan totals — respect backlog toggle
+  const totals = useMemo(() => {
+    let L=0, Ta=0, Tn=0;
+    for (const it of rollupItems) {
+      L += it.L || 0;
+      if (it.agent) Ta += it.T || 0; else Tn += it.T || 0;
+    }
+    return { L, Ta, Tn, T: Ta+Tn };
+  }, [rollupItems]);
+
+  const totalWidth = DAYS.length * DAY_WIDTH;
+
+  return (
+    <div className="app">
+      <div className="title-bar">
+        <h1>RevOps Planner</h1>
+        {activeName
+          ? <span className="scenario-name">{activeName} <span className="auto-saved-tag">✓ auto-saved</span></span>
+          : <span className="scenario-name unnamed">Working state <span className="auto-saved-tag">✓ auto-saved (no name)</span></span>
+        }
+      </div>
+
+      {/* Scenario controls */}
+      <div className="bar row-flex scenario-bar">
+        <span className="bar-label">Scenario</span>
+        <select className="btn" value={activeName || ''} onChange={(e) => switchScenario(e.target.value || null)} style={{minWidth: 200}} title="Switch active scenario">
+          <option value="">— Working state (auto-saved) —</option>
+          {Object.keys(scenarios).sort().map(name => (
+            <option key={name} value={name}>{name}</option>
+          ))}
+        </select>
+        <button className="btn primary" onClick={saveAsScenario} title="Save current state as a new named scenario you can come back to later">Save As…</button>
+        <button className="btn" onClick={saveCurrent} disabled={!activeName} title={activeName ? `Save changes to "${activeName}"` : 'Use Save As… first to create a named scenario'}>Save</button>
+        <button className="btn" onClick={duplicateScenario} disabled={!activeName} title={activeName ? 'Duplicate current scenario under a new name' : 'No active scenario to duplicate'}>Duplicate</button>
+        <button className="btn" onClick={deleteScenario} disabled={!activeName} title={activeName ? 'Delete the active scenario' : 'No active scenario to delete'}>Delete</button>
+        <span style={{flex:1}} />
+        <button className="btn" onClick={resetToBaseline} title="Reset working state to the 5-item baseline (saved scenarios kept)">Reset</button>
+        <label className="btn" style={{cursor:'pointer'}} title="Load a scenario from a .json file">
+          Import JSON
+          <input type="file" accept=".json,application/json" style={{display:'none'}} onChange={importJSON} />
+        </label>
+        <button className="btn" onClick={exportJSON} title="Download the active scenario only as a .json file">Export active</button>
+        <button className="btn" onClick={exportAllScenarios} title="Download every saved scenario + the working state as one bundled .json file">Export all</button>
+      </div>
+
+      {/* GitHub sync */}
+      <div className="bar row-flex">
+        <span className="bar-label">GitHub</span>
+        <button className="btn gh" onClick={ghSave} disabled={ghStatus && ghStatus.type === 'loading'}>
+          Save to GitHub
+        </button>
+        <button className="btn" onClick={ghLoad} disabled={ghStatus && ghStatus.type === 'loading'}>
+          Load from GitHub
+        </button>
+        {ghStatus && (
+          <span className={"gh-status " + ghStatus.type}>{ghStatus.msg}</span>
+        )}
+        <span style={{flex:1}} />
+        <button className="btn" onClick={() => setGhSettingsOpen(true)} title="Configure GitHub token and repo">⚙ Settings</button>
+      </div>
+
+      {ghSettingsOpen && (
+        <div className="modal-overlay" onClick={() => setGhSettingsOpen(false)}>
+          <div className="modal gh-settings-modal" onClick={e => e.stopPropagation()}>
+            <h3 style={{margin: '0 0 12px', fontFamily: 'Fraunces, serif'}}>GitHub Sync Settings</h3>
+            <label>
+              Repository (owner/repo)
+              <input type="text" value={ghRepo} onChange={e => setGhRepo(e.target.value)} placeholder="owner/repo-name" />
+            </label>
+            <label>
+              Personal Access Token
+              <input type="password" value={ghPat} onChange={e => setGhPat(e.target.value)} placeholder="ghp_xxxxxxxxxxxx" />
+              <div className="help-text">
+                Create a fine-grained PAT at GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens. Grant "Contents" read/write access to your repo only. The token is stored in your browser's localStorage — never committed to the repo.
+              </div>
+            </label>
+            <div className="modal-actions">
+              <button className="btn" onClick={() => setGhSettingsOpen(false)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Plan summary */}
+      <div className="bar">
+        <div className="plan-summary">
+          <div className="metric primary"><span className="label">Lydia hrs in plan</span><span className="value">{r1(totals.L)}</span></div>
+          <div className="metric sub"><span className="label">Taylor agent hrs</span><span className="value">{r1(totals.Ta)}</span></div>
+          <div className="metric sub"><span className="label">Taylor non-agent hrs</span><span className="value">{r1(totals.Tn)}</span></div>
+          <div className="metric primary"><span className="label">Taylor combined</span><span className="value">{r1(totals.T)}</span></div>
+        </div>
+      </div>
+
+      {/* Budgets */}
+      <div className="bar">
+        <div style={{fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--ink-3)', marginBottom: 8}}>Budgets</div>
+        <div className="budget-grid">
+          <div className="budget-field">
+            <span className="field-label">Lydia weekly target (hrs)</span>
+            <input type="number" value={budgets.lydiaWeekly} onChange={e => setBudgets({...budgets, lydiaWeekly: e.target.value})} />
+          </div>
+          <div className="budget-field">
+            <span className="field-label">Taylor agent monthly (hrs)</span>
+            <input type="number" placeholder="(blank — set per scenario)" value={budgets.taylorAgentMonthly} onChange={e => setBudgets({...budgets, taylorAgentMonthly: e.target.value})} />
+          </div>
+          <div className="budget-field">
+            <span className="field-label">Taylor non-agent monthly (hrs)</span>
+            <input type="number" value={budgets.taylorNonAgentMonthly} onChange={e => setBudgets({...budgets, taylorNonAgentMonthly: e.target.value})} />
+          </div>
+          <div className="budget-field">
+            <span className="field-label">Taylor weekly ceiling (hrs)</span>
+            <input type="number" value={budgets.taylorWeeklyCeiling} onChange={e => setBudgets({...budgets, taylorWeeklyCeiling: e.target.value})} />
+          </div>
+          <div className="budget-field">
+            <span className="field-label">Buffer (inside ceiling, hrs)</span>
+            <input type="number" value={budgets.bufferHrs} onChange={e => setBudgets({...budgets, bufferHrs: e.target.value})} />
+          </div>
+        </div>
+      </div>
+
+      {/* Workstream chips + backlog toggle */}
+      <div className="bar row-flex">
+        <span className="bar-label">Buckets</span>
+        <button className="bucket-toggle-all" title={hidden.size === 0 ? 'Hide all buckets' : 'Show all buckets'}
+          onClick={() => {
+            if (hidden.size === 0) setHidden(new Set(buckets.map(b => b.name)));
+            else setHidden(new Set());
+          }}>
+          {hidden.size === 0 ? 'Hide all' : 'Show all'}
+        </button>
+        {buckets.map(b => (
+          <button key={b.name} className="chip" data-active={!hidden.has(b.name)}
+            onClick={() => {
+              const next = new Set(hidden);
+              if (next.has(b.name)) next.delete(b.name); else next.add(b.name);
+              setHidden(next);
+            }}>
+            <span className="dot" style={{background: b.color}} />
+            {b.name}
+          </button>
+        ))}
+        <span style={{flex:1}} />
+        <span style={{fontSize: 11, color: 'var(--ink-3)', borderLeft: '1px solid var(--line)', paddingLeft: 12, marginLeft: 4}}>Timeline range:</span>
+        <button className="btn" onClick={() => setVisibleWeekdays(w => Math.max(DEFAULT_WEEKDAYS, w - WEEKDAYS_PER_MONTH))} disabled={visibleWeekdays <= DEFAULT_WEEKDAYS} title="Show one fewer month at the end of the timeline">− Month</button>
+        <button className="btn" onClick={() => setVisibleWeekdays(w => w + WEEKDAYS_PER_MONTH)} title="Show one more month at the end of the timeline">+ Month</button>
+        <span style={{fontSize: 11, color: 'var(--ink-3)', borderLeft: '1px solid var(--line)', paddingLeft: 12, marginLeft: 4}}>
+          <label className="row-flex" style={{gap:6, fontSize:12, color:'var(--ink-2)'}}>
+            <input type="checkbox" checked={includeBacklog} onChange={e => setIncludeBacklog(e.target.checked)} />
+            Include backlog in rollup
+          </label>
+        </span>
+      </div>
+
+      {/* Rollup collapse toggle — dedicated, always-visible row */}
+      <div style={{display:'flex', justifyContent:'flex-end', marginBottom:6}}>
+        <button
+          onClick={() => setRollupCollapsed(c => !c)}
+          title={rollupCollapsed ? 'Show monthly + weekly rollup' : 'Hide monthly + weekly rollup to see more of the list'}
+          style={{
+            background:'var(--paper)', border:'1px solid var(--line-strong)', borderRadius:4,
+            padding:'5px 12px', fontFamily:'inherit', fontSize:12, color:'var(--ink)',
+            cursor:'pointer', fontWeight:500
+          }}>
+          {rollupCollapsed ? '▾ Show monthly + weekly rollup' : '▴ Hide monthly + weekly rollup'}
+        </button>
+      </div>
+
+      {/* Timeline */}
+      <div className={"timeline-container" + (rollupCollapsed ? " rollup-collapsed" : "")}>
+        <div className="timeline-scroll">
+          <div className="timeline-inner">
+            {/* Left meta header */}
+            <div className="meta-col" style={{width: META_WIDTH}}>
+              <div className="rollup-strip">
+                {/* Single tall cell — per-month summary (replaces both monthly+weekly legend rows) */}
+                <div className="meta-summary" style={{width: META_WIDTH, height: 210, borderRight: '1px solid var(--line-strong)', borderBottom: '1px solid var(--line-strong)'}}>
+                  <div className="meta-summary-title">Monthly Summary  ·  L = Lydia · T = Taylor combined</div>
+                  {MONTHS.map(m => {
+                    const sum = sumGroup(alloc, m.days.map(d => d.index));
+                    const budgetM = monthlyBudgets(budgets, m.days);
+                    return (
+                      <div key={m.key} className="month-summary-row">
+                        <span className="month-name">{m.label}</span>
+                        <span className={"month-metric metric-" + colorFor(sum.L, budgetM.L)}>
+                          <span className="ml">L</span>
+                          <span className="mv">{r1(sum.L)} / {r1(budgetM.L)}</span>
+                        </span>
+                        <span className={"month-metric metric-" + (budgetM.Tcombined == null ? 'neutral' : colorFor(sum.T, budgetM.Tcombined))}>
+                          <span className="ml">T</span>
+                          <span className="mv">{r1(sum.T)} / {budgetM.Tcombined != null ? r1(budgetM.Tcombined) : '—'}</span>
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              {/* Spacer to align with day-header-row on timeline col */}
+              <div className="day-header-row" style={{width: META_WIDTH, borderRight:'1px solid var(--line-strong)'}} />
+              {/* + New bucket row — sits at the very top of the bucket list */}
+              <div className="add-bucket-row" style={{width: META_WIDTH, borderRight:'1px solid var(--line-strong)'}}>
+                <button className="add-bucket-btn" onClick={addBucket} title="Add a new bucket to the bottom of the list">
+                  <span className="plus">+</span> New bucket
+                </button>
+              </div>
+              {/* Bucket + item rows in meta col */}
+              {buckets.map(b => {
+                if (hidden.has(b.name)) return null;
+                const bItems = items.filter(it => it.bucket === b.name);
+                // Bucket header totals also respect the backlog toggle
+                const bItemsForTotals = includeBacklog ? bItems : bItems.filter(it => it.status !== 'Backlog');
+                const bucketTotal = bItemsForTotals.reduce((s,i) => s + (i.L||0) + (i.T||0), 0);
+                let doneIdx = -1;
+                for (const it of bItemsForTotals) {
+                  const p = placements[it.id];
+                  if (!p) continue;
+                  if (it.L > 0) doneIdx = Math.max(doneIdx, p.L.start + p.L.length - 1);
+                  if (it.T > 0) doneIdx = Math.max(doneIdx, p.T.start + p.T.length - 1);
+                }
+                const doneLabel = doneIdx >= 0 && doneIdx < DAYS.length
+                  ? DAYS[doneIdx].date.toLocaleDateString('en-US', {month:'short', day:'numeric'})
+                  : null;
+                return (
+                  <div className={"bucket-block "
+                       + (draggedRow && draggedRow.type === 'bucket' && draggedRow.id === b.name ? 'dragging ' : '')
+                       + (dropTarget && dropTarget.type === 'bucket' && dropTarget.id === b.name ? 'drop-target-' + dropTarget.position : '')} key={b.name}
+                       onDragOver={(e) => onRowDragOver(e, 'bucket', b.name)}
+                       onDrop={(e) => onRowDrop(e, 'bucket', b.name)}>
+                    <div className="bucket-header-row" style={{background: b.color + '22', borderLeft: `3px solid ${b.color}`}}>
+                      <div className="bucket-header">
+                        <span className="row-drag-handle" draggable
+                              onDragStart={(e) => onRowDragStart(e, 'bucket', b.name)}
+                              onDragEnd={onRowDragEnd}
+                              title="Drag to reorder bucket">⠿</span>
+                        <span className="bucket-chevron">▼</span>
+                        <EditableBucketName name={b.name} onRename={(newName) => renameBucket(b.name, newName)} />
+                        <span className="bucket-meta-line">
+                          {bItemsForTotals.length} task{bItemsForTotals.length !== 1 ? 's' : ''}
+                          {!includeBacklog && bItems.length > bItemsForTotals.length && <span style={{color: 'var(--ink-3)', fontSize: 11, fontStyle: 'italic'}}> (+{bItems.length - bItemsForTotals.length} backlog)</span>}
+                          <span className="sep">·</span>
+                          <span className="mono">{r1(bucketTotal)}h</span>
+                          {doneLabel && <>
+                            <span className="sep">·</span>
+                            done {doneLabel}
+                          </>}
+                        </span>
+                        <span style={{flex: 1}} />
+                        <button className="btn" onClick={() => addItem(b.name)} style={{padding:'3px 10px', fontSize: 11}} title="Add a new item to this bucket">+ Item</button>
+                        <button className="btn icon-btn" onClick={() => deleteBucket(b.name)} title="Delete this bucket">×</button>
+                      </div>
+                    </div>
+                    {/* Column header row per bucket */}
+                    <div className="col-header-row">
+                      <div className="col-header-label">Task</div>
+                      <div className="col-header-label has-tooltip">
+                        Size
+                        <div className="size-tooltip">
+                          <table>
+                            <thead><tr><th>Size</th><th>Est hours</th></tr></thead>
+                            <tbody>
+                              <tr><td className="size-name">S</td><td className="size-hours">5–10 hrs</td></tr>
+                              <tr><td className="size-name">M</td><td className="size-hours">10–20 hrs</td></tr>
+                              <tr><td className="size-name">L</td><td className="size-hours">20–40 hrs</td></tr>
+                              <tr><td className="size-name">XL</td><td className="size-hours">40+ hrs</td></tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                      <div className="col-header-label right">Due date</div>
+                      <div className="col-header-label">Status</div>
+                      <div className="col-header-label">Est hrs</div>
+                    </div>
+                    {bItems.map(it => {
+                      const isPastDue = it.due && new Date(it.due + 'T00:00:00') < TODAY;
+                      return (
+                        <div className={"item-row "
+                          + (it.status === 'Backlog' ? 'backlog ' : (it.status === 'Completed' ? 'completed ' : ''))
+                          + (draggedRow && draggedRow.type === 'item' && draggedRow.id === it.id ? 'dragging ' : '')
+                          + (dropTarget && dropTarget.type === 'item' && dropTarget.id === it.id ? 'drop-target-' + dropTarget.position : '')} key={it.id}
+                          onDragOver={(e) => onRowDragOver(e, 'item', it.id)}
+                          onDrop={(e) => onRowDrop(e, 'item', it.id)}>
+                          <div className="item-meta">
+                            <div className="item-name-cell">
+                              <span className="row-drag-handle" draggable
+                                    onDragStart={(e) => onRowDragStart(e, 'item', it.id)}
+                                    onDragEnd={onRowDragEnd}
+                                    title="Drag to reorder item">⠿</span>
+                              <button className="row-delete-btn" onClick={() => deleteItem(it.id)} title="Delete this item">×</button>
+                              <div className="item-name-stack" data-fullname={it.name}>
+                                <InlineText
+                                  value={it.name}
+                                  onChange={(v) => updateItem(it.id, { name: v })}
+                                  className="item-name-text"
+                                  placeholder="Item name"
+                                />
+                                <span className="item-name-tags">
+                                  <label className="agent-toggle" title="Toggle agent (Taylor hours count as agent vs non-agent)">
+                                    <input type="checkbox" checked={it.agent} onChange={(e) => updateItem(it.id, { agent: e.target.checked })} />
+                                    <span className={"row-tag agent" + (it.agent ? '' : ' off')}>Agent</span>
+                                  </label>
+                                </span>
+                              </div>
+                            </div>
+                            <div className="item-size-cell">
+                              <InlineSelect value={it.size} options={SIZES} onChange={(v) => updateItem(it.id, { size: v })} className="size-tag" />
+                            </div>
+                            <div className={"due-cell" + (isPastDue ? " past-due" : (!it.due ? " empty" : ""))}>
+                              <InlineDate value={it.due} onChange={(v) => updateItem(it.id, { due: v })} pastDue={isPastDue} />
+                            </div>
+                            <div className="status-cell">
+                              <InlineSelect value={it.status} options={STATUSES} onChange={(v) => updateItem(it.id, { status: v })} className={"status-pill status-" + it.status.replace(/\s+/g, '-')} />
+                            </div>
+                            <div className="hrs-cell hrs-L">
+                              <span className="hrs-label">L</span>
+                              <InlineNumber value={it.L} onChange={(v) => updateItem(it.id, { L: v })} className="hrs-value" />
+                            </div>
+                            <div className="hrs-cell hrs-T">
+                              <span className="hrs-label">T</span>
+                              <InlineNumber value={it.T} onChange={(v) => updateItem(it.id, { T: v })} className="hrs-value" />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Timeline col */}
+            <div className="timeline-col" style={{width: totalWidth}}>
+              <div className="rollup-strip">
+                {/* Monthly row */}
+                <div className="rollup-row monthly">
+                  {MONTHS.map(m => {
+                    const sum = sumGroup(alloc, m.days.map(d => d.index));
+                    const budgetM = monthlyBudgets(budgets, m.days);
+                    const w = m.days.length * DAY_WIDTH;
+                    return (
+                      <div key={m.key} className="rollup-cell monthly" style={{width: w, display:'flex', flexDirection:'column', justifyContent:'center'}}>
+                        <div className="cell-title">{m.label}</div>
+                        <MetricLine label="LYDIA" used={sum.L} budget={budgetM.L} />
+                        <div className="taylor-sub">Taylor</div>
+                        <MetricLine label="agent" used={sum.Ta} budget={budgetM.agent} muted />
+                        <MetricLine label="non-agent" used={sum.Tn} budget={budgetM.nonAgent} muted />
+                        <MetricLine label="combined" used={sum.T} budget={budgetM.Tcombined} bold />
+                      </div>
+                    );
+                  })}
+                </div>
+                {/* Weekly row */}
+                <div className="rollup-row weekly">
+                  {WEEKS.map(wk => {
+                    const sum = sumGroup(alloc, wk.days.map(d => d.index));
+                    const wb = weeklyBudgets(budgets);
+                    const w = wk.days.length * DAY_WIDTH;
+                    return (
+                      <div key={wk.index} className="rollup-cell weekly" style={{width: w}}>
+                        <div className="cell-title">Wk {wk.start.date.toLocaleDateString('en-US', {month:'short', day:'numeric'})}</div>
+                        <MetricLine label="LYDIA" used={sum.L} budget={wb.L} compact />
+                        <div className="taylor-sub">Taylor</div>
+                        <MetricLine label="agent" used={sum.Ta} budget={null} muted compact />
+                        <MetricLine label="non-agent" used={sum.Tn} budget={null} muted compact />
+                        <MetricLine label="combined" used={sum.T} budget={wb.T} bold compact />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Day header */}
+              <div className="day-header-row">
+                {DAYS.map(d => (
+                  <div key={d.index} className={"day-cell" + (d.isMonStart ? " month-start" : "")} style={{width: DAY_WIDTH}}>
+                    {d.date.getDate()}
+                  </div>
+                ))}
+              </div>
+
+              {/* Spacer to match the + New bucket row on the meta col */}
+              <div className="add-bucket-row" />
+
+              {/* Bucket + item bars */}
+              {buckets.map(b => {
+                if (hidden.has(b.name)) return null;
+                const bItems = items.filter(it => it.bucket === b.name);
+                return (
+                  <div className="bucket-block" key={b.name}>
+                    <div className="bucket-header-row" style={{background: b.color + '12', height: 50, boxSizing: 'border-box', position:'relative'}} />
+                    <div className="col-header-spacer" />
+                    {bItems.map(it => {
+                      const p = placements[it.id];
+                      const dueIdx = dueToIndex(it.due);
+                      return (
+                        <div className="item-row" key={it.id}>
+                          <div className="item-timeline" style={{width: '100%', position:'relative'}}>
+                            {/* Lydia track */}
+                            <div className={"bar-track lydia" + (it.L > 0 ? '' : ' empty-track')}>
+                              {it.L > 0 ? (
+                                <div className="time-bar lydia" style={{left: p.L.start * DAY_WIDTH + 1, width: p.L.length * DAY_WIDTH - 2}}
+                                     onMouseDown={(e) => startBarDrag(e, it.id, 'L')}>
+                                  <span className="bar-label">L · {r1(it.L)}h</span>
+                                </div>
+                              ) : null}
+                            </div>
+
+                            {/* Taylor track */}
+                            <div className={"bar-track taylor" + (it.T > 0 ? '' : ' empty-track')}>
+                              {it.T > 0 ? (
+                                <div className="time-bar taylor" style={{left: p.T.start * DAY_WIDTH + 1, width: p.T.length * DAY_WIDTH - 2}}
+                                     onMouseDown={(e) => startBarDrag(e, it.id, 'T')}>
+                                  <span className="bar-label">T · {r1(it.T)}h</span>
+                                </div>
+                              ) : null}
+                            </div>
+
+                            {/* Due diamond */}
+                            {dueIdx != null && <DueDiamond idx={dueIdx} />}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="help" style={{marginTop: 12}}>
+        Edit any field inline (click a value to edit). Drag bars to reposition (middle = slide, edges = resize). Drag the ⠿ handle to reorder items or buckets. Use the Scenario bar to save/load named plans, or Export JSON to back up to disk.
+      </div>
+
+      {confirmModal && (
+        <div className="modal-overlay" onClick={() => setConfirmModal(null)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <p className="modal-message">{confirmModal.message}</p>
+            <div className="modal-actions">
+              <button className="btn" onClick={() => setConfirmModal(null)}>Cancel</button>
+              <button className="btn danger" onClick={() => { confirmModal.onConfirm(); setConfirmModal(null); }}>Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Inline editors ── */
+function InlineText({ value, onChange, className, placeholder }) {
+  return (
+    <input
+      type="text"
+      className={"inline-edit inline-text " + (className || "")}
+      value={value || ''}
+      placeholder={placeholder || ''}
+      onChange={(e) => onChange(e.target.value)}
+    />
+  );
+}
+function InlineNumber({ value, onChange, className }) {
+  return (
+    <input
+      type="number"
+      step="0.25"
+      min="0"
+      className={"inline-edit inline-number " + (className || "")}
+      value={value ?? 0}
+      onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
+    />
+  );
+}
+function InlineDate({ value, onChange, pastDue }) {
+  // Show formatted date when not focused, raw date input when focused
+  const [focused, setFocused] = useState(false);
+  const display = value
+    ? new Date(value + 'T00:00:00').toLocaleDateString('en-US', {month:'short', day:'numeric'})
+        + (pastDue ? ' !' : '')
+    : '—';
+  if (focused) {
+    return (
+      <input
+        type="date"
+        className="inline-edit inline-date"
+        value={value || ''}
+        autoFocus
+        onChange={(e) => onChange(e.target.value || null)}
+        onBlur={() => setFocused(false)}
+      />
+    );
+  }
+  return (
+    <span className="inline-edit inline-date-display" tabIndex={0}
+      onClick={() => setFocused(true)} onFocus={() => setFocused(true)}>
+      {display}
+    </span>
+  );
+}
+function InlineSelect({ value, options, onChange, className }) {
+  return (
+    <select
+      className={"inline-edit inline-select " + (className || "")}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    >
+      {options.map(o => <option key={o} value={o}>{o}</option>)}
+    </select>
+  );
+}
+function EditableBucketName({ name, onRename }) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(name);
+  if (editing) {
+    return (
+      <input
+        type="text"
+        className="inline-edit bucket-name-edit"
+        value={draft}
+        autoFocus
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={() => { onRename(draft); setEditing(false); }}
+        onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); if (e.key === 'Escape') { setDraft(name); setEditing(false); } }}
+      />
+    );
+  }
+  return <span className="bucket-name" onClick={() => { setDraft(name); setEditing(true); }} title="Click to rename">{name}</span>;
+}
+
+function MetricLine({ label, used, budget, muted, bold, compact }) {
+  // muted sub-rows (agent/non-agent) never receive the color treatment — info only.
+  // Only primary rows (Lydia, Combined) flash green/amber/red based on fit.
+  const tone = muted ? 'neutral' : colorFor(used, budget);
+  const cls = 'metric-line metric-' + tone + (muted ? ' muted' : '') + (bold ? ' bold' : '');
+  const delta = budget != null ? (used - budget) : null;
+  const showDelta = !compact && delta != null && Math.abs(delta) > 0.05;
+  return (
+    <div className={cls}>
+      <span className="label">{label}</span>
+      <span className="val">{r1(used)} / {budget != null ? r1(budget) : '—'}{showDelta ? ' (' + (delta > 0 ? '+' : '') + r1(delta) + ')' : ''}</span>
+    </div>
+  );
+}
+
+function DueDiamond({ idx }) {
+  const left = (idx + 0.5) * DAY_WIDTH;
+  return (
+    <div style={{position:'absolute', left, top: 4, zIndex: 1, pointerEvents:'none'}}>
+      <div style={{
+        width: 11, height: 11, background: 'var(--ink)',
+        transform: 'rotate(45deg) translate(-50%, 0)', transformOrigin: '0 0',
+      }} title="Due date" />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
